@@ -21,7 +21,7 @@ def parse_opt():
     parser.add_argument(
         '--num_head',
         type=int,
-        default=8,
+        default=1,
         help='number of attention heads')
 
     parser.add_argument(
@@ -31,13 +31,32 @@ def parse_opt():
         '--input_dropout_p',
         type=float,
         default=0.2,
-        help='strength of dropout in the Language Model RNN')
+        help='strength of dropout in the Pre Transformer Encoder Linear Layer')
 
     parser.add_argument(
-        '--rnn_dropout_p',
+        '--max_seq_len',
+        type=int,
+        default=10,
+        help='sequence length of the items')
+
+    parser.add_argument(
+        '--item_data_path',
+        type=str,
+        default="./data/ml-100k/u.item",
+        help='data path for item info')
+
+    parser.add_argument(
+        '--seq_data_path',
+        type=str,
+        default="./sequences.pkl",
+        help='data path for item sequences')
+
+
+    parser.add_argument(
+        '--dropout',
         type=float,
-        default=0.5,
-        help='strength of dropout in the Language Model RNN')
+        default=0.1,
+        help="strength on dropout in Transformer Encoder layer")
 
     parser.add_argument(
         '--dim_item',
@@ -135,6 +154,12 @@ def parse_opt():
         type=str,
         default='./save',
         help='directory to store check pointed models')
+
+    parser.add_argument(
+        '--loss',
+        type=str,
+        default='adaptive_hinge_loss',
+        help='Loss function')
 
     parser.add_argument(
         '--load_checkpoint',
