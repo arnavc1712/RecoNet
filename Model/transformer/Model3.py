@@ -6,7 +6,7 @@ import model.transformer.Constants as Constants
 from model.transformer.Layers import EncoderLayer, DecoderLayer
 
 __author__ = 'Yu-Hsiang Huang'
-__RevisedBy__ = 'Jacob Zhiyuan Fang'
+__RevisedBy__ = 'Arnav Chakravarthy'
 
 
 def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):

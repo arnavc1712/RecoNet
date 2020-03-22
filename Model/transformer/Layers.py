@@ -1,9 +1,10 @@
 ''' Define the Layers '''
 import torch.nn as nn
+import torch
 from model.transformer.SubLayers import MultiHeadAttention, PositionwiseFeedForward
 
 __author__ = 'Yu-Hsiang Huang'
-__RevisedBy__ = 'Jacob Zhiyuan Fang'
+__RevisedBy__ = 'Arnav Chakravarthy'
 
 
 class EncoderLayer(nn.Module):
@@ -19,12 +20,12 @@ class EncoderLayer(nn.Module):
         enc_output, enc_slf_attn = self.slf_attn(
             enc_input, enc_input, enc_input, mask=slf_attn_mask)
 
-        if non_pad_mask:
+        if non_pad_mask!=None:
             enc_output *= non_pad_mask
 
         enc_output = self.pos_ffn(enc_output)
 
-        if non_pad_mask:
+        if non_pad_mask!=None:
             enc_output *= non_pad_mask
 
         return enc_output, enc_slf_attn
