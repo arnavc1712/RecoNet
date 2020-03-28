@@ -19,7 +19,7 @@ def train(loader,model,optimizer,opt):
 	ix_to_item = loader.dataset.get_ix_to_item()
 	item_to_ix = loader.dataset.get_item_to_ix()
 	for epoch in range(opt['epochs']):
-		for i,data in enumerate(loader):
+		for i,(data,user_ids) in enumerate(loader):
 
 			# print(data.shape)
 			# print(data)
@@ -29,7 +29,7 @@ def train(loader,model,optimizer,opt):
 			src_pos = pos_generate(data)
 			
 			
-			user_rep,_,attns= model.user_representation(data,src_pos,return_attns=True)
+			user_rep,_,attns = model.user_representation(data,src_pos,user_ids,return_attns=True)
 
 			positive_prediction = model(user_rep,data[:,1:])
 			# print(positive_prediction)
@@ -84,6 +84,8 @@ def main(opt):
 	dataloader = DataLoader(dataset,batch_size=128,shuffle=True,collate_fn=rec_collate_fn)
 	print(dataset.get_num_items())
 	model = Encoder(seq_len=opt['max_seq_len'],
+			n_users=dataset.get_num_users(),
+			dim_user=opt["dim_item"],
             dim_item=opt["dim_item"],
             n_items=dataset.get_num_items(),
             n_layers=opt["num_layer"],
