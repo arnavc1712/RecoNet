@@ -70,8 +70,8 @@ def train(loader,model,optimizer,opt):
 			torch.save(model.state_dict(), model_path)
 			
 			print('model saved to %s' % (model_path))
-            with open(model_info_path, 'a') as f:
-                f.write('model_%d, loss: %.6f\n' % (epoch, train_loss))
+			with open(model_info_path, 'a') as f:
+				f.write('model_%d, loss: %.6f\n' % (epoch, train_loss))
 
 	
 
