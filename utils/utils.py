@@ -88,6 +88,8 @@ def show_predictions(seq,user_rep,model,ix_to_item,attns):
     random_id = random.randint(0, len(seq)-1)
 
     print("Sequence")
+    user_rep = user_rep.cpu()
+    model = model.cpu()
     print(list(map(lambda x:ix_to_item[x],seq[random_id].numpy().flatten())))
     print("\n")
     seq = seq[random_id][-1:]
