@@ -64,6 +64,14 @@ def train(loader,model,optimizer,opt):
 
 			optimizer.step()
 
+		if epoch % opt['save_checkpoint_every'] == 0:
+			model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
+			model_info_path = os.path.join(opt['checkpoint_path'], 'model_score.txt')
+			torch.save(model.state_dict(), model_path)
+			
+			print('model saved to %s' % (model_path))
+            with open(model_info_path, 'a') as f:
+                f.write('model_%d, loss: %.6f\n' % (epoch, train_loss))
 
 	
 

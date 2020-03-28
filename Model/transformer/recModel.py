@@ -78,7 +78,7 @@ class Encoder(nn.Module):
         self.num_items=n_items
 
         self.d_model = d_model
-        self.item_embedding = ScaledEmbedding(n_items+1,dim_item,padding_idx=0)
+        self.item_embedding = ScaledEmbedding(n_items,dim_item,padding_idx=0)
         self.input_dropout = nn.Dropout(input_dropout_p)
 
         self.item2hid = nn.Linear(dim_item,d_model)
