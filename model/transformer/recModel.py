@@ -122,7 +122,7 @@ class Encoder(nn.Module):
         ## Converting dimensions of video + postional embeddings into d_model
         batch_size, seq_len, dim_item = enc_output.size()
 
-        enc_output = enc_output.view(-1, dim_item) + src_user_emb.view(-1,dim_item) ## Adding the user embedding for personalization
+        enc_output = enc_output.view(-1, dim_item)
 
         enc_output = self.item2hid(enc_output) 
 
@@ -131,7 +131,7 @@ class Encoder(nn.Module):
 
 
         for i,enc_layer in enumerate(self.layer_stack):
-            enc_output, enc_slf_attn = enc_layer(enc_output, non_pad_mask=non_pad_mask, slf_attn_mask=slf_attn_mask)
+            enc_output, enc_slf_attn = enc_layer(enc_output, src_user_emb,non_pad_mask=non_pad_mask, slf_attn_mask=slf_attn_mask)
             if return_attns:
                 enc_slf_attn_list += enc_slf_attn
 
