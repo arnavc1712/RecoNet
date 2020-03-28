@@ -77,9 +77,9 @@ class RecDataset(Dataset):
 		
 		data = {}
 		sequence = self.splits[self.mode][ix]
-		print(sequence.shape)
-		data["inputs"] = torch.from_numpy(sequence[:,:-1]).type(torch.LongTensor)
-		data["targets"] = torch.from_numpy(sequence[:,1:]).type(torch.LongTensor)
+		# print(sequence.shape)
+		data["inputs"] = torch.from_numpy(sequence[:-1]).type(torch.LongTensor)
+		data["targets"] = torch.from_numpy(sequence[1:]).type(torch.LongTensor)
 		return data
 
 
