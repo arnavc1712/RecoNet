@@ -156,7 +156,7 @@ class Encoder(nn.Module):
         return negative_prediction.view(n, batch_size, sliding_window)
 
     def forward(self, user_rep,item_seq):
-        target_embed = self.item_embedding(item_seq)
+        target_embed = self.item_embedding(item_seq).cuda()
         dot = (user_rep*target_embed).sum(-1).squeeze()
 
         return dot
