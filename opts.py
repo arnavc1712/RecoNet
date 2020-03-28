@@ -168,6 +168,12 @@ def parse_opt():
         help='directory to load check pointed models')
 
     parser.add_argument(
+        '--warm_up_steps',
+        type=int,
+        default=1000,
+        help="number of warm up steps")
+
+    parser.add_argument(
         '--gpu', type=str, default='0', help='gpu device number')
 
     args = parser.parse_args()

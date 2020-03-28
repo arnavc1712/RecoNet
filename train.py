@@ -7,6 +7,7 @@ from data.data_loader import RecDataset,rec_collate_fn
 from model.transformer.recModel import Encoder
 import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss
+from model.transformer.Optim import ScheduledOptim
 import os
 
 
@@ -104,8 +105,8 @@ def main(opt):
 	model = model.cuda()
 
 
-	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09)
+	optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
+                                          betas=(0.9, 0.98), eps=1e-09),opt["dim_model"],opt["warm_up_steps"])
 	train(dataloader,model,optimizer,opt)
 
 
