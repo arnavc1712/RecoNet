@@ -63,12 +63,12 @@ def train(loader,model,optimizer,opt):
 							  mask=(target_ids != 0))
 			epoch_loss += loss.item()
 			torch.cuda.synchronize()
-
-			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
+			
+			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}, Current lr: {optimizer._optimizer.param_groups[0]['lr']}")
 			# print(loss.item())
 			loss.backward()
 
-			optimizer.step()
+			optimizer.step_and_update_lr()
 
 		if epoch % opt['save_checkpoint_every'] == 0:
 			model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
