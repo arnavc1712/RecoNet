@@ -79,8 +79,8 @@ class RecDataset(Dataset):
 
 		print(f"Total number of examples is {len(self.sequences_data)}")
 		self.splits['train_seq'],self.splits['test_seq'],self.splits["train_user"],self.splits["test_user"] = train_test_split(self.sequences_data,self.user_ids,test_size=0.2,random_state=RANDOM_SEED)
-		print(f"Total number of Training examples is {len(self.splits['train'])}")
-		print(f"Total number of Test examples is {len(self.splits['test'])}")
+		print(f"Total number of Training examples is {len(self.splits['train_seq'])}")
+		print(f"Total number of Test examples is {len(self.splits['test_seq'])}")
 
 
 	def __getitem__(self,ix):
