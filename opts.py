@@ -131,11 +131,6 @@ def parse_opt():
         default=1e-8,
         help='epsilon that goes into denominator for smoothing')
 
-    parser.add_argument(
-        '--warm_up_steps',
-        type=int,
-        default=500,
-        help='Warm up steps.')
 
     parser.add_argument(
         '--weight_decay',
