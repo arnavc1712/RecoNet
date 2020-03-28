@@ -76,7 +76,9 @@ class RecDataset(Dataset):
 	def __getitem__(self,ix):
 		
 		data = {}
-		data["sequence"] = torch.from_numpy(self.splits[self.mode][ix]).type(torch.LongTensor)
+		sequence = torch.from_numpy(self.splits[self.mode][ix]).type(torch.LongTensor)
+		data["inputs"] = sequence[:,:-1]
+		data["targets"] = sequence[:,1:]
 		return data
 
 
@@ -86,13 +88,15 @@ class RecDataset(Dataset):
 
 
 def rec_collate_fn(batch_lst):
-	batch_lens = [_['sequence'].shape[0] for _ in batch_lst]
+	batch_lens = [_['inputs'].shape[0] for _ in batch_lst]
 	max_seq_len = max(batch_lens) ## Finding maximum length in batch for videos
-	seq_ids = torch.zeros(len(batch_lst),max_seq_len)
+	input_ids = torch.zeros(len(batch_lst),max_seq_len)
+	target_ids = torch.zeros(len(batch_lst),max_seq_len)
 	for batch_id,batch_data in enumerate(batch_lst):
-		seq_ids[batch_id][:batch_data["sequence"].shape[0]] = batch_data["sequence"]
+		input_ids[batch_id][:batch_data["inputs"].shape[0]] = batch_data["inputs"]
+		target_ids[batch_id][:batch_data["targets"].shape[0]] = batch_data["targets"]
 
-	return seq_ids.type(torch.LongTensor)
+	return input_ids.type(torch.LongTensor),target_ids.type(torch.LongTensor)
 
 
 

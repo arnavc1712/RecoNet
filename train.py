@@ -18,7 +18,7 @@ def train(loader,model,optimizer,opt):
 	ix_to_item = loader.dataset.get_ix_to_item()
 	item_to_ix = loader.dataset.get_item_to_ix()
 	for epoch in range(opt['epochs']):
-		for i,data in enumerate(loader):
+		for i,(input_ids,target_ids) in enumerate(loader):
 			torch.cuda.synchronize()
 
 			# print(data.shape)
@@ -26,29 +26,30 @@ def train(loader,model,optimizer,opt):
 			# break
 
 
-			src_pos = pos_generate(data)
-			data = data.cuda()
+			src_pos = pos_generate(input_ids)
+			input_ids = input_ids.cuda()
+			target_ids = target_ids.cuda()
 			src_pos = src_pos.cuda()
 			
 			
-			user_rep,_,attns= model.user_representation(data,src_pos,return_attns=True)
+			user_rep,_,attns= model.user_representation(input_ids,src_pos,return_attns=True)
 
-			positive_prediction = model(user_rep,data[:,1:])
+			positive_prediction = model(user_rep,target_ids)
 
 			# negative_var = model._get_negative_prediction(data[:,1:].size(),user_rep)
 			if opt["loss"]=="adaptive_hinge_loss":
 				negative_prediction = model._get_multiple_negative_predictions(
-	                        data[:,1:].size(),
+	                        input_ids.size(),
 	                        user_rep,
 	                        n=opt["num_neg_sml"])
 			else:
-				negative_prediction = model._get_negative_prediction(data[:,1:].size(),user_rep)
+				negative_prediction = model._get_negative_prediction(input_ids.size(),user_rep)
 			negative_prediction = model(user_rep, negative_prediction)
 
 			# print(negative_prediction)
 			# print(negative_prediction.shape)
 			# print(positive_prediction)
-			show_predictions(data,_,model,ix_to_item,attns)
+			show_predictions(input_ids,target_ids,_,model,ix_to_item,attns)
 			# print(_.size())
 
 			# print(user_rep)
@@ -75,7 +76,7 @@ def train(loader,model,optimizer,opt):
 			
 			print('model saved to %s' % (model_path))
 			with open(model_info_path, 'a') as f:
-				f.write('recnet_%d, loss: %.6f\n' % (epoch, epoch_loss))
+				f.write('recnet_%d, loss: %.6f\n' % (epoch, loss.item()))
 
 	
 

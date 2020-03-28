@@ -74,7 +74,7 @@ class Encoder(nn.Module):
 
         super().__init__()
 
-        n_position = seq_len+2  
+        n_position = seq_len+1  
         self.num_items=n_items
 
         self.d_model = d_model

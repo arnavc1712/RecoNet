@@ -84,16 +84,17 @@ def cal_performance(pred, gold, smoothing=False):
     return loss, n_correct
 
 
-def show_predictions(seq,user_rep,model,ix_to_item,attns):
+def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns):
     random_id = random.randint(0, len(seq)-1)
 
     print("Sequence")
-    seq=seq.cpu()
+    target_ids=target_ids.cpu()
+    input_ids = input_ids.cpu()
     # user_rep = user_rep.cpu()
     # model = model.cpu()
-    print(list(map(lambda x:ix_to_item[x],seq[random_id].numpy().flatten())))
+    print(list(map(lambda x:ix_to_item[x],input_ids[random_id].numpy().flatten())))
     print("\n")
-    seq = seq[random_id][-1:]
+    target = target_ids[random_id][-1:]
     user_rep = user_rep[random_id]
 
     item_ids = np.array(list(ix_to_item.keys())).reshape(-1,1)
