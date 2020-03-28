@@ -16,16 +16,15 @@ class EncoderLayer(nn.Module):
             n_head, d_model, d_k, d_v, dropout=dropout)
         self.pos_ffn = PositionwiseFeedForward(d_model, d_inner, dropout=dropout)
 
-    def forward(self, enc_input, user_emb,non_pad_mask=None, slf_attn_mask=None):
+    def forward(self, enc_input,non_pad_mask=None, slf_attn_mask=None):
         enc_output, enc_slf_attn = self.slf_attn(
             enc_input, enc_input, enc_input, mask=slf_attn_mask)
 
         if non_pad_mask!=None:
             enc_output *= non_pad_mask
-            user_emb *= non_pad_mask
 
         
-        enc_output = self.pos_ffn(enc_output) + user_emb
+        enc_output = self.pos_ffn(enc_output)
 
         if non_pad_mask!=None:
             enc_output *= non_pad_mask

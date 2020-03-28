@@ -116,6 +116,7 @@ class Encoder(nn.Module):
         src_user_emb = self.user_embedding(user_ids) ## (Batch_size,dim)
         # print(src_user_emb.size())
         src_user_emb = src_user_emb.unsqueeze(1).expand(*src_item_emb.size()).contiguous()
+        src_user_emb *= non_pad_mask
        
         enc_output = src_item_emb + self.position_enc(src_pos) ## (Batch_size, max_batch_len, dim_item)
 
@@ -131,10 +132,11 @@ class Encoder(nn.Module):
 
 
         for i,enc_layer in enumerate(self.layer_stack):
-            enc_output, enc_slf_attn = enc_layer(enc_output, src_user_emb,non_pad_mask=non_pad_mask, slf_attn_mask=slf_attn_mask)
+            enc_output, enc_slf_attn = enc_layer(enc_output,non_pad_mask=non_pad_mask, slf_attn_mask=slf_attn_mask)
             if return_attns:
                 enc_slf_attn_list += enc_slf_attn
 
+        enc_output = enc_output + src_user_emb ## Adding user embedding for personalization
 
         if return_attns:
             return enc_output,enc_slf_attn_list
@@ -163,6 +165,7 @@ class Encoder(nn.Module):
         return negative_prediction.view(n, batch_size, sliding_window)
 
     def forward(self, user_rep,item_seq):
+
         target_embed = self.item_embedding(item_seq)
         dot = (user_rep*target_embed).sum(-1).squeeze()
 
