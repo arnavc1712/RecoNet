@@ -122,12 +122,12 @@ class Encoder(nn.Module):
         ## Converting dimensions of video + postional embeddings into d_model
         batch_size, seq_len, dim_item = enc_output.size()
 
-        enc_output = enc_output.view(-1, dim_item)
+        # enc_output = enc_output.view(-1, dim_item)
 
-        enc_output = self.item2hid(enc_output) 
+        # enc_output = self.item2hid(enc_output) 
 
-        enc_output = self.input_dropout(enc_output)
-        enc_output = enc_output.view(batch_size,seq_len,self.d_model)
+        # enc_output = self.input_dropout(enc_output)
+        # enc_output = enc_output.view(batch_size,seq_len,self.d_model)
 
 
         for i,enc_layer in enumerate(self.layer_stack):
