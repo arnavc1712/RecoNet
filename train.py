@@ -70,7 +70,7 @@ def train(loader,model,optimizer,opt):
 			# print(loss.item())
 			loss.backward()
 
-			optimizer.step()
+			optimizer.step_and_update_lr()
 
 		if epoch % opt['save_checkpoint_every'] == 0:
 			model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
