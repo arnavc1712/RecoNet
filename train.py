@@ -6,7 +6,7 @@ from utils.utils import *
 from data.data_loader import RecDataset,rec_collate_fn
 from model.transformer.recModel import Encoder
 import torch.optim as optim
-from losses import hinge_loss, adaptive_hinge_loss
+from losses import hinge_loss, adaptive_hinge_loss, binary_cross_entropy
 from model.transformer.Optim import ScheduledOptim
 import os
 
@@ -39,11 +39,12 @@ def train(loader,model,optimizer,opt):
 			positive_prediction = model(user_rep,target_ids)
 
 			# negative_var = model._get_negative_prediction(data[:,1:].size(),user_rep)
-			if opt["loss"]=="adaptive_hinge_loss":
+			if opt["loss"]=="adaptive_hinge_loss" or opt["loss"]=="binary_cross_entropy":
 				negative_prediction = model._get_multiple_negative_predictions(
 	                        input_ids.size(),
 	                        user_rep,
 	                        n=opt["num_neg_sml"])
+
 			else:
 				negative_prediction = model._get_negative_prediction(input_ids.size(),user_rep)
 			negative_prediction = model(user_rep, negative_prediction)
@@ -59,7 +60,7 @@ def train(loader,model,optimizer,opt):
 
 			optimizer.zero_grad()
 
-			loss = adaptive_hinge_loss(positive_prediction,
+			loss = binary_cross_entropy(positive_prediction,
 							  negative_prediction,
 							  mask=(target_ids != 0))
 			epoch_loss += loss.item()
