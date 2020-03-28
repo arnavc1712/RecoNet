@@ -89,8 +89,8 @@ def show_predictions(seq,user_rep,model,ix_to_item,attns):
 
     print("Sequence")
     seq=seq.cpu()
-    user_rep = user_rep.cpu()
-    model = model.cpu()
+    # user_rep = user_rep.cpu()
+    # model = model.cpu()
     print(list(map(lambda x:ix_to_item[x],seq[random_id].numpy().flatten())))
     print("\n")
     seq = seq[random_id][-1:]
@@ -100,7 +100,7 @@ def show_predictions(seq,user_rep,model,ix_to_item,attns):
     item_ids = torch.from_numpy(item_ids).type(torch.LongTensor)
     size = (len(item_ids),) + user_rep.size()
     out = model(user_rep.expand(*size),item_ids)
-    preds = out.detach().numpy().flatten()
+    preds = out.detach().cpu().numpy().flatten()
 
     most_probable_10 = preds.argsort()[-10:][::-1]
     most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
