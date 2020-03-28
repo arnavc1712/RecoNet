@@ -60,7 +60,7 @@ def train(loader,model,optimizer,opt):
 
 			loss = adaptive_hinge_loss(positive_prediction,
 							  negative_prediction,
-							  mask=(data[:,1:] != 0))
+							  mask=(target_ids != 0))
 			epoch_loss += loss.item()
 			torch.cuda.synchronize()
 
