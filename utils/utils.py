@@ -105,7 +105,7 @@ def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns):
 
     most_probable_10 = preds.argsort()[-10:][::-1]
     most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
-    g_t = ix_to_item[seq.detach().numpy().flatten()[0]]
+    g_t = ix_to_item[target.detach().numpy().flatten()[0]]
 
     print("Most probable")
     print(most_prob_10_items)
