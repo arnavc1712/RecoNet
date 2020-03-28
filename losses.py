@@ -65,3 +65,36 @@ def adaptive_hinge_loss(positive_predictions, negative_predictions, mask=None):
     highest_negative_predictions, _ = torch.max(negative_predictions, 0)
 
     return hinge_loss(positive_predictions, highest_negative_predictions.squeeze(), mask=mask)
+
+
+def binary_cross_entropy(positive_predictions,negative_predictions,mask):
+    '''
+        Implementing Binary Cross entropy loss
+
+        positive_predictions (batch_size,max_seq_len)
+        negative_predictions (n,batch_size,max_seq_len)
+    '''
+   
+    positive_predictions = torch.sigmoid(positive_predictions)
+    negative_predictions = torch.sigmoid(negative_predictions)
+
+
+    log_pos = torch.log(positive_predictions)
+    log_neg = torch.log(1.0-negative_predictions)
+    tot_neg_predictions = torch.sum(log_neg,0).squeeze() ## (batch_size,max_seq_len)
+    
+    loss = log_pos + log_neg
+
+
+    if mask is not None:
+        mask = mask.float()
+        loss = loss * mask
+        return -(loss.sum() / mask.sum())
+
+    return -loss.mean()
+
+
+
+
+
+

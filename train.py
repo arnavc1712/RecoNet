@@ -6,7 +6,7 @@ from utils.utils import *
 from data.data_loader import RecDataset,rec_collate_fn
 from model.transformer.recModel import Encoder
 import torch.optim as optim
-from losses import hinge_loss, adaptive_hinge_loss
+from losses import hinge_loss, adaptive_hinge_loss,binary_cross_entropy
 import os
 
 
@@ -32,6 +32,7 @@ def train(loader,model,optimizer,opt):
 			user_rep,_,attns= model.user_representation(data,src_pos,return_attns=True)
 
 			positive_prediction = model(user_rep,data[:,1:])
+			# print(positive_prediction)
 
 			# negative_var = model._get_negative_prediction(data[:,1:].size(),user_rep)
 			if opt["loss"]=="adaptive_hinge_loss":
@@ -39,24 +40,22 @@ def train(loader,model,optimizer,opt):
 	                        data[:,1:].size(),
 	                        user_rep,
 	                        n=opt["num_neg_sml"])
+
 			else:
 				negative_prediction = model._get_negative_prediction(data[:,1:].size(),user_rep)
 			negative_prediction = model(user_rep, negative_prediction)
 
-			# print(negative_prediction)
-			# print(negative_prediction.shape)
-			# print(positive_prediction)
 			show_predictions(data,_,model,ix_to_item,attns)
-			# print(_.size())
-
-			# print(user_rep)
-			# print(user_rep.shape)
-
+	
 			optimizer.zero_grad()
 
-			loss = adaptive_hinge_loss(positive_prediction,
-							  negative_prediction,
-							  mask=(data[:,1:] != 0))
+			loss = binary_cross_entropy(positive_prediction,
+											negative_prediction,
+											mask=(data[:,1:] != 0))
+
+			# loss = adaptive_hinge_loss(positive_prediction,
+			# 				  negative_prediction,
+			# 				  mask=(data[:,1:] != 0))
 			epoch_loss += loss.item()
 
 			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
@@ -65,14 +64,14 @@ def train(loader,model,optimizer,opt):
 
 			optimizer.step()
 
-		if epoch % opt['save_checkpoint_every'] == 0:
-			model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
-			model_info_path = os.path.join(opt['checkpoint_path'], 'model_score.txt')
-			torch.save(model.state_dict(), model_path)
+		# if epoch % opt['save_checkpoint_every'] == 0:
+		# 	model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
+		# 	model_info_path = os.path.join(opt['checkpoint_path'], 'model_score.txt')
+		# 	torch.save(model.state_dict(), model_path)
 			
-			print('model saved to %s' % (model_path))
-			with open(model_info_path, 'a') as f:
-				f.write('recnet_%d, loss: %.6f\n' % (epoch, loss.item()))
+		# 	print('model saved to %s' % (model_path))
+		# 	with open(model_info_path, 'a') as f:
+		# 		f.write('recnet_%d, loss: %.6f\n' % (epoch, loss.item()))
 
 	
 
