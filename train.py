@@ -32,7 +32,8 @@ def train(loader,model,optimizer,opt):
 			src_pos = src_pos.cuda()
 			
 			
-			user_rep,_,attns= model.user_representation(input_ids,src_pos,return_attns=True)
+			user_rep,attns= model.user_representation(input_ids,src_pos,return_attns=True)
+
 
 			positive_prediction = model(user_rep,target_ids)
 
@@ -49,7 +50,7 @@ def train(loader,model,optimizer,opt):
 			# print(negative_prediction)
 			# print(negative_prediction.shape)
 			# print(positive_prediction)
-			show_predictions(input_ids,target_ids,_,model,ix_to_item,attns)
+			show_predictions(input_ids,target_ids,user_rep[:,-1:,:],model,ix_to_item,attns)
 			# print(_.size())
 
 			# print(user_rep)

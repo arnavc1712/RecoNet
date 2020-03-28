@@ -130,9 +130,9 @@ class Encoder(nn.Module):
 
 
         if return_attns:
-            return enc_output[:,:-1,:],enc_output[:,-1:,:], enc_slf_attn_list
+            return enc_output,enc_slf_attn_list
         
-        return enc_output[:,:-1,:],enc_output[:,-1:,:],
+        return enc_output
 
 
     def _get_negative_prediction(self, shape, user_representation):
