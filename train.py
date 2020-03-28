@@ -66,7 +66,7 @@ def train(loader,model,optimizer,opt):
 			epoch_loss += loss.item()
 			torch.cuda.synchronize()
 			
-			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}, Current lr: {optimizer._optimizer.param_groups[0]['lr']}")
+			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
 			# print(loss.item())
 			loss.backward()
 
