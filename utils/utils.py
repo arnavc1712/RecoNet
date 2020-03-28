@@ -85,7 +85,7 @@ def cal_performance(pred, gold, smoothing=False):
 
 
 def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns):
-    random_id = random.randint(0, len(seq)-1)
+    random_id = random.randint(0, len(input_ids)-1)
 
     print("Sequence")
     target_ids=target_ids.cpu()
