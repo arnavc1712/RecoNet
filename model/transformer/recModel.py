@@ -94,7 +94,7 @@ class Encoder(nn.Module):
             EncoderLayer(d_model, d_inner, n_head, d_k, d_v, dropout=dropout)
             for _ in range(n_layers)])
 
-    def user_representation(self,src_emb,src_pos,return_attns=False):
+    def user_representation(self,src_emb,src_pos,user_ids,return_attns=False):
 
         ''' 
             src_emb: Sequences of items (batch_size,max_batch_len)
