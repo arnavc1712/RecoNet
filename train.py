@@ -19,6 +19,7 @@ def train(loader,model,optimizer,opt):
 	item_to_ix = loader.dataset.get_item_to_ix()
 	for epoch in range(opt['epochs']):
 		for i,data in enumerate(loader):
+			torch.cuda.synchronize()
 
 			# print(data.shape)
 			# print(data)
@@ -26,6 +27,8 @@ def train(loader,model,optimizer,opt):
 
 
 			src_pos = pos_generate(data)
+			data = data.cuda()
+			src_pos = src_pos.cuda()
 			
 			
 			user_rep,_,attns= model.user_representation(data,src_pos,return_attns=True)
@@ -57,6 +60,7 @@ def train(loader,model,optimizer,opt):
 							  negative_prediction,
 							  mask=(data[:,1:] != 0))
 			epoch_loss += loss.item()
+			torch.cuda.synchronize()
 
 			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
 			# print(loss.item())
@@ -82,7 +86,7 @@ def train(loader,model,optimizer,opt):
 def main(opt):
 	dataset = RecDataset('train',opt)
 	dataloader = DataLoader(dataset,batch_size=128,shuffle=True,collate_fn=rec_collate_fn)
-	print(dataset.get_num_items())
+
 	model = Encoder(seq_len=opt['max_seq_len'],
             dim_item=opt["dim_item"],
             n_items=dataset.get_num_items(),
@@ -94,6 +98,9 @@ def main(opt):
             d_inner=opt["dim_inner"],
             input_dropout_p=opt["input_dropout_p"],
             dropout=opt["dropout"])
+
+	model = model.cuda()
+
 
 	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
                                           betas=(0.9, 0.98), eps=1e-09)

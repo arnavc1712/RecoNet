@@ -31,12 +31,12 @@ def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
         # zero vector for padding dimension
         sinusoid_table[padding_idx] = 0.
 
-    return torch.FloatTensor(sinusoid_table)
+    return torch.FloatTensor(sinusoid_table).cuda()
 
 
 def get_non_pad_mask(seq):
     assert seq.dim() == 2
-    return seq.ne(Constants.PAD).type(torch.float).unsqueeze(-1)
+    return seq.ne(Constants.PAD).type(torch.float).unsqueeze(-1).cuda()
 
 
 def get_attn_key_pad_mask(seq_k, seq_q):
@@ -47,7 +47,7 @@ def get_attn_key_pad_mask(seq_k, seq_q):
     padding_mask = seq_k.eq(Constants.PAD)
     padding_mask = padding_mask.unsqueeze(1).expand(-1, len_q, -1)  # b x lq x lk
 
-    return padding_mask
+    return padding_mask.cuda()
 
 
 def get_subsequent_mask(seq):
@@ -58,7 +58,7 @@ def get_subsequent_mask(seq):
         torch.ones((len_s, len_s), device=seq.device, dtype=torch.uint8), diagonal=1)
     subsequent_mask = subsequent_mask.unsqueeze(0).expand(sz_b, -1, -1)  # b x ls x ls
 
-    return subsequent_mask
+    return subsequent_mask.cuda()
 
 
 class Encoder(nn.Module):
