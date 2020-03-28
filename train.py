@@ -7,6 +7,7 @@ from data.data_loader import RecDataset,rec_collate_fn
 from model.transformer.recModel import Encoder
 import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss
+import os
 
 
 
@@ -71,7 +72,7 @@ def train(loader,model,optimizer,opt):
 			
 			print('model saved to %s' % (model_path))
 			with open(model_info_path, 'a') as f:
-				f.write('model_%d, loss: %.6f\n' % (epoch, train_loss))
+				f.write('recnet_%d, loss: %.6f\n' % (epoch, loss.item()))
 
 	
 
