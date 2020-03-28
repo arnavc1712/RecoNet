@@ -97,7 +97,7 @@ def show_predictions(seq,user_rep,model,ix_to_item,attns):
     user_rep = user_rep[random_id]
 
     item_ids = np.array(list(ix_to_item.keys())).reshape(-1,1)
-    item_ids = torch.from_numpy(item_ids).type(torch.LongTensor)
+    item_ids = torch.from_numpy(item_ids).type(torch.LongTensor).cuda()
     size = (len(item_ids),) + user_rep.size()
     out = model(user_rep.expand(*size),item_ids)
     preds = out.detach().cpu().numpy().flatten()
