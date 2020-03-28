@@ -157,7 +157,7 @@ class Encoder(nn.Module):
 
     def forward(self, user_rep,item_seq):
         target_embed = self.item_embedding(item_seq)
-        dot = (user_rep*target_embed).sum(-1).squeeze()
+        dot = (user_rep*target_embed).sum(-1)
 
         return dot
 
