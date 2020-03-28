@@ -33,7 +33,7 @@ def train(loader,model,optimizer,opt):
 			
 			user_rep,_,attns= model.user_representation(data,src_pos,return_attns=True)
 
-			positive_prediction = model(user_rep,data[:,1:].cuda()
+			positive_prediction = model(user_rep,data[:,1:].cuda())
 
 			# negative_var = model._get_negative_prediction(data[:,1:].size(),user_rep)
 			if opt["loss"]=="adaptive_hinge_loss":
