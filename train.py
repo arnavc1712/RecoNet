@@ -106,8 +106,8 @@ def main(opt):
 	model = model.cuda()
 
 
-	optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09),opt["dim_model"],opt["warm_up_steps"])
+	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
+                                          betas=(0.9, 0.98), eps=1e-09)
 	train(dataloader,model,optimizer,opt)
 
 
