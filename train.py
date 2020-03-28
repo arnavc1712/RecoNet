@@ -19,7 +19,7 @@ def train(loader,model,optimizer,opt):
 	ix_to_item = loader.dataset.get_ix_to_item()
 	item_to_ix = loader.dataset.get_item_to_ix()
 	for epoch in range(opt['epochs']):
-		for i,(input_ids,target_ids) in enumerate(loader):
+		for i,(input_ids,target_ids,user_ids) in enumerate(loader):
 			torch.cuda.synchronize()
 
 			# print(data.shape)
@@ -31,9 +31,10 @@ def train(loader,model,optimizer,opt):
 			input_ids = input_ids.cuda()
 			target_ids = target_ids.cuda()
 			src_pos = src_pos.cuda()
+			user_ids = user_ids.cuda()
 			
 			
-			user_rep,attns= model.user_representation(input_ids,src_pos,return_attns=True)
+			user_rep,attns= model.user_representation(input_ids,src_pos,user_ids,return_attns=True)
 
 
 			positive_prediction = model(user_rep,target_ids)
@@ -93,6 +94,8 @@ def main(opt):
 
 	model = Encoder(seq_len=opt['max_seq_len'],
             dim_item=opt["dim_item"],
+            dim_user=opt["dim_item"],
+            n_users=dataset.get_num_users(),
             n_items=dataset.get_num_items(),
             n_layers=opt["num_layer"],
             n_head=opt["num_head"],

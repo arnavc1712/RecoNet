@@ -67,7 +67,9 @@ class Encoder(nn.Module):
     def __init__(
             self,
             seq_len,
+            dim_user,
             dim_item,
+            n_users,
             n_items,
             n_layers, n_head, d_k, d_v,
             d_model, d_inner, input_dropout_p=0.2,dropout=0.1):
@@ -76,9 +78,11 @@ class Encoder(nn.Module):
 
         n_position = seq_len+1  
         self.num_items=n_items
+        self.num_users = n_users
 
         self.d_model = d_model
         self.item_embedding = ScaledEmbedding(n_items,dim_item,padding_idx=0)
+        self.user_embedding = ScaledEmbedding(n_users,dim_user,padding_idx=0)
         self.input_dropout = nn.Dropout(input_dropout_p)
 
         self.item2hid = nn.Linear(dim_item,d_model)
@@ -90,7 +94,7 @@ class Encoder(nn.Module):
             EncoderLayer(d_model, d_inner, n_head, d_k, d_v, dropout=dropout)
             for _ in range(n_layers)])
 
-    def user_representation(self,src_emb,src_pos,return_attns=False):
+    def user_representation(self,src_emb,src_pos,user_ids,return_attns=False):
 
         ''' 
             src_emb: Sequences of items (batch_size,max_batch_len)
@@ -109,15 +113,18 @@ class Encoder(nn.Module):
  
         src_item_emb = self.item_embedding(src_emb) ## (Batch_size, max_seq_len, dim_item)
         # -- Forward
+        src_user_emb = self.user_embedding(user_ids) ## (Batch_size,dim)
+        # print(src_user_emb.size())
+        src_user_emb = src_user_emb.unsqueeze(1).expand(*src_item_emb.size()).contiguous()
        
         enc_output = src_item_emb + self.position_enc(src_pos) ## (Batch_size, max_batch_len, dim_item)
 
         ## Converting dimensions of video + postional embeddings into d_model
         batch_size, seq_len, dim_item = enc_output.size()
 
-        enc_output = enc_output.view(-1, dim_item)
+        enc_output = enc_output.view(-1, dim_item) + src_user_emb.view(-1,dim_item) ## Adding the user embedding for personalization
 
-        enc_output = self.item2hid(enc_output)
+        enc_output = self.item2hid(enc_output) 
 
         enc_output = self.input_dropout(enc_output)
         enc_output = enc_output.view(batch_size,seq_len,self.d_model)
