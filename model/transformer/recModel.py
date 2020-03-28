@@ -143,7 +143,7 @@ class Encoder(nn.Module):
             # random_state=self._random_state)
         negative_var = torch.from_numpy(negative_items)
 
-        return negative_var
+        return negative_var.cuda()
 
     def _get_multiple_negative_predictions(self, shape, user_representation,
                                            n=5):
