@@ -67,11 +67,12 @@ def train(loader,model,optimizer,opt):
 			epoch_loss += loss.item()
 			torch.cuda.synchronize()
 			
-			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
+			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}, Learning Rate: {optimizer._optimizer.
+                     param_groups[0]['lr']}")
 			# print(loss.item())
 			loss.backward()
-
-			optimizer.step()
+			torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
+			optimizer.step_and_update_lr()
 
 		if epoch % opt['save_checkpoint_every'] == 0:
 			model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
@@ -109,8 +110,10 @@ def main(opt):
 	model = model.cuda()
 
 
-	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09)
+	# optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
+ #                                          betas=(0.9, 0.98), eps=1e-09)
+ 	optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
+                                          betas=(0.9, 0.98), eps=1e-09), opt["dim_model"], opt["warm_up_steps"])
 	train(dataloader,model,optimizer,opt)
 
 
