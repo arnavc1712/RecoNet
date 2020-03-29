@@ -25,6 +25,12 @@ def parse_opt():
         help='number of attention heads')
 
     parser.add_argument(
+        '--num_recs',
+        type=int,
+        default=10,
+        help='number of recommendations to show')
+
+    parser.add_argument(
         '--num_layers', type=int, default=1, help='number of layers in the Transformers')
 
     parser.add_argument(

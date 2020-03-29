@@ -53,7 +53,7 @@ def train(loader,model,optimizer,opt):
 			# print(negative_prediction)
 			# print(negative_prediction.shape)
 			# print(positive_prediction)
-			show_predictions(input_ids,target_ids,user_rep[:,-1:,:],model,ix_to_item,attns)
+			show_predictions(input_ids,target_ids,user_rep[:,-1:,:],model,ix_to_item,attns,opt)
 			# print(_.size())
 
 			# print(user_rep)

@@ -84,7 +84,7 @@ def cal_performance(pred, gold, smoothing=False):
     return loss, n_correct
 
 
-def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns):
+def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns,opt):
     random_id = random.randint(0, len(input_ids)-1)
 
     print("Sequence")
@@ -103,7 +103,7 @@ def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns):
     out = model(user_rep.expand(*size),item_ids)
     preds = out.detach().cpu().numpy().flatten()
 
-    most_probable_10 = preds.argsort()[-10:][::-1]
+    most_probable_10 = preds.argsort()[-opt["num_recs"]:][::-1]
     most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
     g_t = ix_to_item[target.detach().numpy().flatten()[0]]
 
