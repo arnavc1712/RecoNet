@@ -67,8 +67,7 @@ def train(loader,model,optimizer,opt):
 			epoch_loss += loss.item()
 			torch.cuda.synchronize()
 			
-			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}, Learning Rate: {optimizer._optimizer.
-                     param_groups[0]['lr']}")
+			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}, Learning Rate: {optimizer._optimizer.param_groups[0]['lr']}")
 			# print(loss.item())
 			loss.backward()
 			torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
