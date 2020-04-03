@@ -31,10 +31,8 @@ class RecDataset(Dataset):
 
 		self.mode = mode
 		self.splits = {}
-		self.splits['train_seq'] = []
-		self.splits['test_seq'] = []
-		self.splits["train_user"] = []
-		self.splits["test_user"] = []
+		self.splits['train'] = []
+		self.splits['test'] = []
 
 		self.ix_to_item={}
 		self.item_to_ix = {}
@@ -58,15 +56,15 @@ class RecDataset(Dataset):
 
 		path_to_data = os.path.join(os.getcwd(),opt["seq_data_path"])
 
+		
 		seq_data = np.array(pickle.load(open(path_to_data,"rb")))
 		data = seq_data[:,1]
 
 		self.user_ids = np.array(list(map(lambda x:int(x),seq_data[:,0].tolist()))).reshape(-1,1)
 		unique_user_ids = np.unique(self.user_ids)
-
-		self.num_users = max(unique_user_ids) + 1
 		print(f"Number of users: {max(unique_user_ids)}")
-		# print(np.unique(user_ids))
+		self.num_users = max(unique_user_ids) + 1
+
 		self.max_len = max([len(x) for x in data])
 
 		self.sequences_data = []
@@ -78,9 +76,9 @@ class RecDataset(Dataset):
 
 		self.sequences_data = np.array(self.sequences_data)
 
+
 		print(f"Total number of examples is {len(self.sequences_data)}")
 		self.splits['train_seq'],self.splits['test_seq'],self.splits["train_user"],self.splits["test_user"] = train_test_split(self.sequences_data,self.user_ids,test_size=0.2,random_state=RANDOM_SEED)
-
 		print(f"Total number of Training examples is {len(self.splits['train_seq'])}")
 		print(f"Total number of Test examples is {len(self.splits['test_seq'])}")
 
@@ -88,7 +86,10 @@ class RecDataset(Dataset):
 	def __getitem__(self,ix):
 		
 		data = {}
-		data["sequence"] = torch.from_numpy(self.splits[f"{self.mode}_seq"][ix]).type(torch.LongTensor)
+		sequence = self.splits[f"{self.mode}_seq"][ix]
+		# print(sequence.shape)
+		data["inputs"] = torch.from_numpy(sequence[:-1]).type(torch.LongTensor)
+		data["targets"] = torch.from_numpy(sequence[1:]).type(torch.LongTensor)
 		data["user_ids"] = torch.from_numpy(self.splits[f"{self.mode}_user"][ix]).type(torch.LongTensor)
 		return data
 
@@ -99,16 +100,17 @@ class RecDataset(Dataset):
 
 
 def rec_collate_fn(batch_lst):
-	batch_lens = [_['sequence'].shape[0] for _ in batch_lst]
+	batch_lens = [_['inputs'].shape[0] for _ in batch_lst]
 	max_seq_len = max(batch_lens) ## Finding maximum length in batch for videos
-	seq_ids = torch.zeros(len(batch_lst),max_seq_len)
+	input_ids = torch.zeros(len(batch_lst),max_seq_len)
+	target_ids = torch.zeros(len(batch_lst),max_seq_len)
 	user_ids = []
 	for batch_id,batch_data in enumerate(batch_lst):
-		seq_ids[batch_id][:batch_data["sequence"].shape[0]] = batch_data["sequence"]
+		input_ids[batch_id][:batch_data["inputs"].shape[0]] = batch_data["inputs"]
+		target_ids[batch_id][:batch_data["targets"].shape[0]] = batch_data["targets"]
 		user_ids.append(batch_data["user_ids"])
 
-
-	return seq_ids.type(torch.LongTensor),torch.tensor(user_ids).type(torch.LongTensor)
+	return input_ids.type(torch.LongTensor),target_ids.type(torch.LongTensor),torch.tensor(user_ids).type(torch.LongTensor)
 
 
 

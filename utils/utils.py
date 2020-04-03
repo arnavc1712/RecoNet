@@ -84,24 +84,28 @@ def cal_performance(pred, gold, smoothing=False):
     return loss, n_correct
 
 
-def show_predictions(seq,user_rep,model,ix_to_item,attns):
-    random_id = random.randint(0, len(seq)-1)
+def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns,opt):
+    random_id = random.randint(0, len(input_ids)-1)
 
     print("Sequence")
-    print(list(map(lambda x:ix_to_item[x],seq[random_id].numpy().flatten())))
+    target_ids=target_ids.cpu()
+    input_ids = input_ids.cpu()
+    # user_rep = user_rep.cpu()
+    # model = model.cpu()
+    print(list(map(lambda x:ix_to_item[x],input_ids[random_id].numpy().flatten())))
     print("\n")
-    seq = seq[random_id][-1:]
+    target = target_ids[random_id][-1:]
     user_rep = user_rep[random_id]
 
     item_ids = np.array(list(ix_to_item.keys())).reshape(-1,1)
     item_ids = torch.from_numpy(item_ids).type(torch.LongTensor)
     size = (len(item_ids),) + user_rep.size()
     out = model(user_rep.expand(*size),item_ids)
-    preds = out.detach().numpy().flatten()
+    preds = out.detach().cpu().numpy().flatten()
 
-    most_probable_10 = preds.argsort()[-10:][::-1]
+    most_probable_10 = preds.argsort()[-opt["num_recs"]:][::-1]
     most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
-    g_t = ix_to_item[seq.detach().numpy().flatten()[0]]
+    g_t = ix_to_item[target.detach().numpy().flatten()[0]]
 
     print("Most probable")
     print(most_prob_10_items)
@@ -113,8 +117,6 @@ def show_predictions(seq,user_rep,model,ix_to_item,attns):
     print("True Label")
     print(g_t)
     print("\n")
-
-
 
 
 def pos_generate(item_seq):

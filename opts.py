@@ -25,6 +25,18 @@ def parse_opt():
         help='number of attention heads')
 
     parser.add_argument(
+        '--include_user',
+        type=int,
+        default=0,
+        help='Whether to include user embeddings or not')
+
+    parser.add_argument(
+        '--num_recs',
+        type=int,
+        default=10,
+        help='number of recommendations to show')
+
+    parser.add_argument(
         '--num_layers', type=int, default=1, help='number of layers in the Transformers')
 
     parser.add_argument(
@@ -131,11 +143,6 @@ def parse_opt():
         default=1e-8,
         help='epsilon that goes into denominator for smoothing')
 
-    parser.add_argument(
-        '--warm_up_steps',
-        type=int,
-        default=500,
-        help='Warm up steps.')
 
     parser.add_argument(
         '--weight_decay',
@@ -166,6 +173,12 @@ def parse_opt():
         type=str,
         default='./save/bleu_38_epoch_240.pth',
         help='directory to load check pointed models')
+
+    parser.add_argument(
+        '--warm_up_steps',
+        type=int,
+        default=1000,
+        help="number of warm up steps")
 
     parser.add_argument(
         '--gpu', type=str, default='0', help='gpu device number')

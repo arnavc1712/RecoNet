@@ -7,6 +7,7 @@ from data.data_loader import RecDataset,rec_collate_fn
 from model.transformer.recModel import Encoder
 import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss,binary_cross_entropy
+from model.transformer.Optim import ScheduledOptim
 import os
 
 
@@ -19,25 +20,25 @@ def train(loader,model,optimizer,opt):
 	ix_to_item = loader.dataset.get_ix_to_item()
 	item_to_ix = loader.dataset.get_item_to_ix()
 	for epoch in range(opt['epochs']):
-		for i,(data,user_ids) in enumerate(loader):
+		for i,(input_ids,target_ids,user_ids) in enumerate(loader):
 
 			# print(data.shape)
 			# print(data)
 			# break
 
 
-			src_pos = pos_generate(data)
+			src_pos = pos_generate(input_ids)
 			
 			
-			user_rep,_,attns = model.user_representation(data,src_pos,user_ids,return_attns=True)
+			user_rep,attns = model.user_representation(input_ids,src_pos,user_ids,return_attns=True,include_user=opt['include_user'])
 
-			positive_prediction = model(user_rep,data[:,1:])
+			positive_prediction = model(user_rep,target_ids)
 			# print(positive_prediction)
 
 			# negative_var = model._get_negative_prediction(data[:,1:].size(),user_rep)
-			if opt["loss"]=="adaptive_hinge_loss":
+			if opt["loss"]=="adaptive_hinge_loss" or opt["loss"]=="binary_cross_entropy":
 				negative_prediction = model._get_multiple_negative_predictions(
-	                        data[:,1:].size(),
+	                        input_ids.size(),
 	                        user_rep,
 	                        n=opt["num_neg_sml"])
 
@@ -45,33 +46,33 @@ def train(loader,model,optimizer,opt):
 				negative_prediction = model._get_negative_prediction(data[:,1:].size(),user_rep)
 			negative_prediction = model(user_rep, negative_prediction)
 
-			show_predictions(data,_,model,ix_to_item,attns)
+			show_predictions(input_ids,target_ids,user_rep[:,-1:,:],model,ix_to_item,attns,opt)
 	
 			optimizer.zero_grad()
 
 			loss = binary_cross_entropy(positive_prediction,
 											negative_prediction,
-											mask=(data[:,1:] != 0))
+											mask=(target_ids != 0))
 
 			# loss = adaptive_hinge_loss(positive_prediction,
 			# 				  negative_prediction,
 			# 				  mask=(data[:,1:] != 0))
 			epoch_loss += loss.item()
 
-			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
-			# print(loss.item())
+			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}, Learning Rate: {optimizer._optimizer.param_groups[0]['lr']}")			# print(loss.item())
 			loss.backward()
+			torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
+			optimizer.step_and_update_lr()
 
-			optimizer.step()
-
-		# if epoch % opt['save_checkpoint_every'] == 0:
-		# 	model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
-		# 	model_info_path = os.path.join(opt['checkpoint_path'], 'model_score.txt')
-		# 	torch.save(model.state_dict(), model_path)
+		
+		if epoch % opt['save_checkpoint_every'] == 0:
+			model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
+			model_info_path = os.path.join(opt['checkpoint_path'], 'model_score.txt')
+			torch.save(model.state_dict(), model_path)
 			
-		# 	print('model saved to %s' % (model_path))
-		# 	with open(model_info_path, 'a') as f:
-		# 		f.write('recnet_%d, loss: %.6f\n' % (epoch, loss.item()))
+			print('model saved to %s' % (model_path))
+			with open(model_info_path, 'a') as f:
+				f.write('recnet_%d, loss: %.6f\n' % (epoch, loss.item()))
 
 	
 
@@ -97,8 +98,8 @@ def main(opt):
             input_dropout_p=opt["input_dropout_p"],
             dropout=opt["dropout"])
 
-	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09)
+	optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
+								betas=(0.9, 0.98), eps=1e-09), opt["dim_model"], opt["warm_up_steps"])
 	train(dataloader,model,optimizer,opt)
 
 
