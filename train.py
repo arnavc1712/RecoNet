@@ -34,7 +34,7 @@ def train(loader,model,optimizer,opt):
 			user_ids = user_ids.cuda()
 			
 			
-			user_rep,attns= model.user_representation(input_ids,src_pos,user_ids,return_attns=True)
+			user_rep,attns= model.user_representation(input_ids,src_pos,user_ids,return_attns=True,include_user=opt['include_user'])
 
 
 			positive_prediction = model(user_rep,target_ids)

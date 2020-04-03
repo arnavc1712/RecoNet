@@ -25,6 +25,12 @@ def parse_opt():
         help='number of attention heads')
 
     parser.add_argument(
+        '--include_user',
+        type=int,
+        default=0,
+        help='Whether to include user embeddings or not')
+
+    parser.add_argument(
         '--num_recs',
         type=int,
         default=10,

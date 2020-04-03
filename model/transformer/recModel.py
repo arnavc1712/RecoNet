@@ -94,7 +94,7 @@ class Encoder(nn.Module):
             EncoderLayer(d_model, d_inner, n_head, d_k, d_v, dropout=dropout)
             for _ in range(n_layers)])
 
-    def user_representation(self,src_emb,src_pos,user_ids,return_attns=False):
+    def user_representation(self,src_emb,src_pos,user_ids,return_attns=False,include_user=0):
 
         ''' 
             src_emb: Sequences of items (batch_size,max_batch_len)
@@ -113,10 +113,11 @@ class Encoder(nn.Module):
  
         src_item_emb = self.item_embedding(src_emb) ## (Batch_size, max_seq_len, dim_item)
         # -- Forward
-        src_user_emb = self.user_embedding(user_ids) ## (Batch_size,dim)
-        # print(src_user_emb.size())
-        src_user_emb = src_user_emb.unsqueeze(1).expand(*src_item_emb.size()).contiguous()
-        src_user_emb *= non_pad_mask
+        if include_user:
+            src_user_emb = self.user_embedding(user_ids) ## (Batch_size,dim)
+            # print(src_user_emb.size())
+            src_user_emb = src_user_emb.unsqueeze(1).expand(*src_item_emb.size()).contiguous()
+            src_user_emb *= non_pad_mask
        
         enc_output = src_item_emb + self.position_enc(src_pos) ## (Batch_size, max_batch_len, dim_item)
 
@@ -136,12 +137,13 @@ class Encoder(nn.Module):
             if return_attns:
                 enc_slf_attn_list += enc_slf_attn
 
-        enc_output = enc_output + src_user_emb ## Adding user embedding for personalization
+        if include_user:
+            enc_output = enc_output + src_user_emb ## Adding user embedding for personalization
 
         if return_attns:
             return enc_output,enc_slf_attn_list
         
-        return enc_output
+        return enc_output,
 
 
     def _get_negative_prediction(self, shape, user_representation):
