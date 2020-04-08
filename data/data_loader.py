@@ -40,7 +40,7 @@ class RecDataset(Dataset):
 		with open(os.path.join(os.getcwd(),opt["item_data_path"]),encoding="ISO-8859-1") as f:
 			items = f.readlines()
 		for it in items:
-			split = str(it).split("|")[0:2]
+			split = str(it).split("::")[0:2]
 			# temp = [int(split[0]),split[1]]
 			self.ix_to_item[int(split[0])] = split[1]
 			self.item_to_ix[split[1]] = int(split[0])
@@ -78,7 +78,7 @@ class RecDataset(Dataset):
 
 
 		print(f"Total number of examples is {len(self.sequences_data)}")
-		self.splits['train_seq'],self.splits['test_seq'],self.splits["train_user"],self.splits["test_user"] = train_test_split(self.sequences_data,self.user_ids,test_size=0.2,random_state=RANDOM_SEED)
+		self.splits['train_seq'],self.splits['test_seq'],self.splits["train_user"],self.splits["test_user"] = train_test_split(self.sequences_data,self.user_ids,test_size=0.1,random_state=RANDOM_SEED)
 		print(f"Total number of Training examples is {len(self.splits['train_seq'])}")
 		print(f"Total number of Test examples is {len(self.splits['test_seq'])}")
 
