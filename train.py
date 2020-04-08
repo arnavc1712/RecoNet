@@ -18,6 +18,26 @@ def train(loader,model,optimizer,opt):
 	epoch_loss = 0.0
 	ix_to_item = loader.dataset.get_ix_to_item()
 	item_to_ix = loader.dataset.get_item_to_ix()
+
+	model_conf_path = os.path.join(opt['checkpoint_path'], 'model_conf.txt')
+	with open(model_conf_path,"a") as f:
+		str_ins = f""" seq_len={opt['max_seq_len']} \n
+						loss_fnc={opt['loss']}
+            			dim_item={opt["dim_item"]} \n
+            			dim_user={opt["dim_item"]} \n
+            			n_users={dataset.get_num_users()} \n
+            			n_items={dataset.get_num_items()} \n
+            			n_layers={opt["num_layer"]} \n
+            			n_head={opt["num_head"]} \n
+            			d_k={opt["dim_model"]//opt["num_head"]} \n
+            			d_v={opt["dim_model"]//opt["num_head"]} \n
+            			d_model={opt["dim_model"]} \n
+            			d_inner={opt["dim_inner"]} \n
+            			input_dropout_p={opt["input_dropout_p"]} \n
+            			dropout={opt["dropout"]}"""
+
+        f.write(str_ins)
+
 	for epoch in range(opt['epochs']):
 		for i,(input_ids,target_ids,user_ids) in enumerate(loader):
 			torch.cuda.synchronize()
