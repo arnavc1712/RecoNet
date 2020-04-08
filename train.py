@@ -22,6 +22,7 @@ def train(loader,model,optimizer,opt):
 	model_conf_path = os.path.join(opt['checkpoint_path'], 'model_conf.txt')
 	with open(model_conf_path,"a") as f:
 		str_ins = f""" seq_len={opt['max_seq_len']} \n
+						include_user={opt['include_user']} \n
 						loss_fnc={opt['loss']}
             			dim_item={opt["dim_item"]} \n
             			dim_user={opt["dim_item"]} \n
