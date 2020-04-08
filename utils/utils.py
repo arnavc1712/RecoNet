@@ -92,7 +92,7 @@ def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns,opt):
     input_ids = input_ids.cpu()
     # user_rep = user_rep.cpu()
     # model = model.cpu()
-    print(list(map(lambda x:ix_to_item[x],input_ids[random_id].numpy().flatten())))
+    print(list(map(lambda x:"UNK" if x not in ix_to_item else ix_to_item[x],input_ids[random_id].numpy().flatten())))
     print("\n")
     target = target_ids[random_id][-1:]
     user_rep = user_rep[random_id]
@@ -104,7 +104,7 @@ def show_predictions(input_ids,target_ids,user_rep,model,ix_to_item,attns,opt):
     preds = out.detach().cpu().numpy().flatten()
 
     most_probable_10 = preds.argsort()[-opt["num_recs"]:][::-1]
-    most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
+    most_prob_10_items = list(map(lambda x:"UNK" if x not in ix_to_item else ix_to_item[x],most_probable_10))
     g_t = ix_to_item[target.detach().numpy().flatten()[0]]
 
     print("Most probable")
