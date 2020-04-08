@@ -80,9 +80,14 @@ def train(loader,model,optimizer,opt):
 
 			optimizer.zero_grad()
 
-			loss = binary_cross_entropy(positive_prediction,
-							  negative_prediction,
-							  mask=(target_ids != 0))
+			if opt["loss"]=="binary_cross_entropy":
+				loss = binary_cross_entropy(positive_prediction,
+								  negative_prediction,
+								  mask=(target_ids != 0))
+			elif opt["loss"]=="adaptive_hinge_loss":
+				loss = adaptive_hinge_loss(positive_prediction,
+								  negative_prediction,
+								  mask=(target_ids != 0))
 			epoch_loss += loss.item()
 			torch.cuda.synchronize()
 			
