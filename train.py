@@ -26,8 +26,6 @@ def train(loader,model,optimizer,opt):
 						loss_fnc={opt['loss']}
 						dim_item={opt["dim_item"]} \n
 						dim_user={opt["dim_item"]} \n
-						n_users={dataset.get_num_users()} \n
-						n_items={dataset.get_num_items()} \n
 						n_layers={opt["num_layer"]} \n
 						n_head={opt["num_head"]} \n
 						d_k={opt["dim_model"]//opt["num_head"]} \n
