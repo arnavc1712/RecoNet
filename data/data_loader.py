@@ -63,6 +63,7 @@ class RecDataset(Dataset):
 		self.user_ids = np.array(list(map(lambda x:int(x),seq_data[:,0].tolist()))).reshape(-1,1)
 		unique_user_ids = np.unique(self.user_ids)
 		print(f"Number of users: {max(unique_user_ids)}")
+		print(f"Max number of items: {max(list(self.ix_to_item.keys()))+1}")
 		self.num_users = max(unique_user_ids) + 1
 
 		self.max_len = max([len(x) for x in data])
