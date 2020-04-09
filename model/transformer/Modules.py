@@ -40,6 +40,9 @@ class ScaledDotProductAttention(nn.Module):
         # print("Inside module")
 
         print(torch.isnan(attn).any())
+
+        print("\n")
+        print(attn)
         attn = self.dropout(attn)
 
         
