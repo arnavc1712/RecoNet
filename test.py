@@ -61,7 +61,7 @@ def test(loader,model,opt):
 		targets = target_ids.detach().cpu().numpy()[np.array(list(range(len(target_ids)))),tgt_indices_bf_padding]
 		targets = torch.from_numpy(targets).type(torch.LongTensor)
 
-		all_samples = torch.concat((targets.unsqueeze(-1),neg_items),1)
+		all_samples = torch.cat((targets.unsqueeze(-1),neg_items),1)
 		print("ALL SAMPLEs")
 		print(all_samples.shape)
 		btch_sz,length,dim = user_rep_temp.size()
