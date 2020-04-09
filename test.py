@@ -21,7 +21,7 @@ def test(loader,model,opt):
 	true_pred = 0
 	total = 0
 	for i,(input_ids,target_ids,user_ids) in enumerate(loader):
-		neg_items = sample_items(1,num_items,(100))
+		neg_items = sample_items(num_items=num_items,shape=(100))
 		print(neg_items).shape
 		total += input_ids.shape[0]
 		src_pos = pos_generate(input_ids)
