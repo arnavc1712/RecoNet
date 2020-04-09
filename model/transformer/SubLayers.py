@@ -2,6 +2,7 @@
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
+import torch
 from model.transformer.Modules import ScaledDotProductAttention
 
 __author__ = "Yu-Hsiang Huang"
