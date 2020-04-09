@@ -137,6 +137,8 @@ class Encoder(nn.Module):
             if return_attns:
                 enc_slf_attn_list += enc_slf_attn
 
+        print(enc_output)
+
         if include_user:
             enc_output = enc_output + src_user_emb ## Adding user embedding for personalization
 
