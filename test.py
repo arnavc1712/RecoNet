@@ -69,7 +69,7 @@ def test(loader,model,opt):
 		print("Item Ids")
 		print(item_ids.shape)
 		# size = (len(item_ids),) + user_rep_temp.size()
-		user_rep_temp = user_rep_temp.unsqueeze(1).repeat(1,item_ids.shape[1],1,1).cuda()
+		user_rep_temp = user_rep_temp.unsqueeze(1).repeat(1,all_samples.shape[1],1,1).cuda()
 		# print(user_rep_temp.size())
 		out = model(user_rep_temp,all_samples)
 		# print(out.shape)
