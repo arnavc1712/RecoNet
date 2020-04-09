@@ -64,7 +64,7 @@ def test(loader,model,opt):
 		# print(preds[0:10])
 
 		for i,predictions in enumerate(preds):
-			most_probable_10 = predictions.argsort()[-20:][::-1]
+			most_probable_10 = predictions.argsort()[-opt['num_recs']:][::-1]
 			most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
 			g_t = targets[i].detach().numpy().flatten()[0]
 
