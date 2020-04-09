@@ -61,10 +61,8 @@ def test(loader,model,opt):
 		targets = target_ids.detach().cpu().numpy()[np.array(list(range(len(target_ids)))),tgt_indices_bf_padding]
 		targets = torch.from_numpy(targets).type(torch.LongTensor)
 
-		all_samples = torch.cat((targets.unsqueeze(-1),neg_items),1)
-		print("ALL SAMPLEs")
-		print(all_samples.shape)
-		print(all_samples)
+		all_samples = torch.cat((targets.unsqueeze(-1),neg_items),1).unsqueeze(-1)
+
 		btch_sz,length,dim = user_rep_temp.size()
 		item_ids = np.array(list(ix_to_item.keys())).reshape(-1,1)
 		item_ids = torch.from_numpy(item_ids).type(torch.LongTensor).unsqueeze(0).repeat(btch_sz,1,1).cuda()
@@ -73,7 +71,7 @@ def test(loader,model,opt):
 		# size = (len(item_ids),) + user_rep_temp.size()
 		user_rep_temp = user_rep_temp.unsqueeze(1).repeat(1,item_ids.shape[1],1,1).cuda()
 		# print(user_rep_temp.size())
-		out = model(user_rep_temp,item_ids)
+		out = model(user_rep_temp,all_samples)
 		# print(out.shape)
 		preds = []
 		for scores in out:
