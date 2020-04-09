@@ -74,8 +74,7 @@ def binary_cross_entropy(positive_predictions,negative_predictions,mask):
         positive_predictions (batch_size,max_seq_len)
         negative_predictions (n,batch_size,max_seq_len)
     '''
-    print(positive_predictions)
-    print(negative_predictions)
+    
     positive_predictions = torch.sigmoid(positive_predictions)
     negative_predictions = torch.sigmoid(negative_predictions)
 
@@ -85,19 +84,11 @@ def binary_cross_entropy(positive_predictions,negative_predictions,mask):
     tot_neg_predictions = torch.sum(log_neg,0).squeeze() ## (batch_size,max_seq_len)
     
     loss = log_pos + log_neg
-
-    print("LOSS")
-    print(loss)
-
-
+    
 
     if mask is not None:
         mask = mask.float()
         loss = loss * mask
-        # print("MASK SUM")
-        # print(mask.sum())
-        ret_loss =  -(loss.sum() / mask.sum())
-        print(ret_loss)
-        return ret_loss
+        return -(loss.sum() / mask.sum())
 
     return -loss.mean()
