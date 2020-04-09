@@ -16,6 +16,10 @@ class ScaledDotProductAttention(nn.Module):
 
     def forward(self, q, k, v, mask=None):
 
+        print("ATTENTION Q")
+        print(q)
+        print("ATTENTION K")
+        print(k)
         attn = torch.bmm(q, k.transpose(1, 2))
         attn = attn / self.temperature
 
@@ -24,8 +28,7 @@ class ScaledDotProductAttention(nn.Module):
 
         attn = self.softmax(attn)
         attn = self.dropout(attn)
-        print("ATTENTION")
-        print(attn)
+        
         output = torch.bmm(attn, v)
 
         return output, attn
