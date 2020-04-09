@@ -27,22 +27,22 @@ class ScaledDotProductAttention(nn.Module):
         if mask is not None:
             attn = attn.masked_fill(mask, -np.inf)
 
-        print("ATTENTION BEFORE")
-        # print("Inside module")
+        # print("ATTENTION BEFORE")
+        # # print("Inside module")
 
-        print(torch.isnan(attn).any())
+        # print(torch.isnan(attn).any())
 
-        print("\n")
-        print(attn)
+        # print("\n")
+        # print(attn)
         attn = self.softmax(attn)
 
-        print("ATTENTION AFTER")
-        # print("Inside module")
+        # print("ATTENTION AFTER")
+        # # print("Inside module")
 
-        print(torch.isnan(attn).any())
+        # print(torch.isnan(attn).any())
 
-        print("\n")
-        print(attn)
+        # print("\n")
+        # print(attn)
         attn = self.dropout(attn)
 
         

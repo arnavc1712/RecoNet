@@ -131,11 +131,11 @@ class Encoder(nn.Module):
 
         # enc_output = self.input_dropout(enc_output)
         # enc_output = enc_output.view(batch_size,seq_len,self.d_model)
-        print("INPUTS")
-        print(src_emb)
-        print("\n")
-        print("MASK")
-        print(slf_attn_mask)
+        # print("INPUTS")
+        # print(src_emb)
+        # print("\n")
+        # print("MASK")
+        # print(slf_attn_mask)
 
         for i,enc_layer in enumerate(self.layer_stack):
             enc_output, enc_slf_attn = enc_layer(enc_output,non_pad_mask=non_pad_mask, slf_attn_mask=slf_attn_mask)

@@ -93,15 +93,15 @@ class RecDataset(Dataset):
 		sequence = self.splits[f"{self.mode}_seq"][ix]
 		# print(sequence.shape)
 
-		print("SEQUENCE")
-		print(sequence)
-		print("\n")
+		# print("SEQUENCE")
+		# print(sequence)
+		# print("\n")
 
-		print("MUTATED SEQUENCE 1")
-		print(torch.from_numpy(sequence[:-1]).type(torch.LongTensor))
-		print("\n")
-		print("MUTATED SEQUENCE 2")
-		print(torch.from_numpy(sequence[1:]).type(torch.LongTensor))
+		# print("MUTATED SEQUENCE 1")
+		# print(torch.from_numpy(sequence[:-1]).type(torch.LongTensor))
+		# print("\n")
+		# print("MUTATED SEQUENCE 2")
+		# print(torch.from_numpy(sequence[1:]).type(torch.LongTensor))
 		data["inputs"] = torch.from_numpy(sequence[:-1]).type(torch.LongTensor)
 		data["targets"] = torch.from_numpy(sequence[1:]).type(torch.LongTensor)
 		data["user_ids"] = torch.from_numpy(self.splits[f"{self.mode}_user"][ix]).type(torch.LongTensor)
@@ -121,15 +121,15 @@ def rec_collate_fn(batch_lst):
 	user_ids = []
 
 	for batch_id,batch_data in enumerate(batch_lst):
-		print(batch_data["inputs"])
+		# print(batch_data["inputs"])
 		input_ids[batch_id][:batch_data["inputs"].shape[0]] = batch_data["inputs"]
 		target_ids[batch_id][:batch_data["targets"].shape[0]] = batch_data["targets"]
 		# input_ids[batch_id][(max_seq_len-batch_data["inputs"].shape[0]):] = batch_data["inputs"] ## PAdding zeros on the left
 		# target_ids[batch_id][-(max_seq_len-batch_data["targets"].shape[0]):] = batch_data["targets"]
 		user_ids.append(batch_data["user_ids"])
 
-	print("INPUT ID SHAPE")
-	print(input_ids.shape)
+	# print("INPUT ID SHAPE")
+	# print(input_ids.shape)
 	return input_ids.type(torch.LongTensor),target_ids.type(torch.LongTensor),torch.tensor(user_ids).type(torch.LongTensor)
 
 
