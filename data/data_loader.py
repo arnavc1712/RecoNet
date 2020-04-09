@@ -34,24 +34,26 @@ class RecDataset(Dataset):
 		self.splits['train'] = []
 		self.splits['test'] = []
 
-		self.ix_to_item={}
-		self.item_to_ix = {}
+		# self.ix_to_item={}
+		# self.item_to_ix = {}
+		self.ix_to_item = pickle.load(open("ix_to_item.pkl","rb"))
+		self.item_to_ix = pickle.load(open("item_to_ix.pkl","rb"))
 		
-		with open(os.path.join(os.getcwd(),opt["item_data_path"]),encoding="ISO-8859-1") as f:
-			items = f.readlines()
-		for it in items:
-			split = str(it).split("::")[0:2]
-			# temp = [int(split[0]),split[1]]
-			self.ix_to_item[int(split[0])] = split[1]
-			self.item_to_ix[split[1]] = int(split[0])
+		# with open(os.path.join(os.getcwd(),opt["item_data_path"]),encoding="ISO-8859-1") as f:
+		# 	items = f.readlines()
+		# for it in items:
+		# 	split = str(it).split("::")[0:2]
+		# 	# temp = [int(split[0]),split[1]]
+		# 	self.ix_to_item[int(split[0])] = split[1]
+		# 	self.item_to_ix[split[1]] = int(split[0])
 
 		# print(ix_to_item)
 		# item_df = pd.DataFrame(data=items_arr,columns=["id","item"])
 
-		self.sos_id = max(list(self.ix_to_item.keys())) + 1
-		self.ix_to_item[self.sos_id] = "<sos>"
+		# self.sos_id = max(list(self.ix_to_item.keys())) + 1
+		# self.ix_to_item[self.sos_id] = "<sos>"
 		self.ix_to_item[0] = "<pad>"
-		self.item_to_ix["<sos>"] = self.sos_id
+		# self.item_to_ix["<sos>"] = self.sos_id
 		self.item_to_ix["<pad>"] = 0
 
 		path_to_data = os.path.join(os.getcwd(),opt["seq_data_path"])
@@ -71,7 +73,8 @@ class RecDataset(Dataset):
 		self.sequences_data = []
 
 		for i,seq in enumerate(data):
-			seq = np.array([self.item_to_ix["<sos>"]]+list(map(lambda x:int(x),seq)))
+			# seq = np.array([self.item_to_ix["<sos>"]]+list(map(lambda x:int(x),seq)))
+			seq = np.array(list(map(lambda x:int(x),seq)))
 			self.sequences_data.append(seq)
 			
 
@@ -107,8 +110,8 @@ def rec_collate_fn(batch_lst):
 	target_ids = torch.zeros(len(batch_lst),max_seq_len)
 	user_ids = []
 	for batch_id,batch_data in enumerate(batch_lst):
-		input_ids[batch_id][:batch_data["inputs"].shape[0]] = batch_data["inputs"]
-		target_ids[batch_id][:batch_data["targets"].shape[0]] = batch_data["targets"]
+		input_ids[batch_id][-(max_seq_len-batch_data["inputs"].shape[0]):] = batch_data["inputs"] ## PAdding zeros on the left
+		target_ids[batch_id][-(max_seq_len-batch_data["targets"].shape[0]):] = batch_data["targets"]
 		user_ids.append(batch_data["user_ids"])
 
 	return input_ids.type(torch.LongTensor),target_ids.type(torch.LongTensor),torch.tensor(user_ids).type(torch.LongTensor)

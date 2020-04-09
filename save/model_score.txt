@@ -1,0 +1,2 @@
+recnet_0, loss: 2.240344
+recnet_0, loss: 2.070621
