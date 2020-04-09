@@ -123,7 +123,7 @@ class Encoder(nn.Module):
 
         ## Converting dimensions of video + postional embeddings into d_model
         batch_size, seq_len, dim_item = enc_output.size()
-        print(enc_output)
+
 
         # enc_output = enc_output.view(-1, dim_item)
 
@@ -135,6 +135,8 @@ class Encoder(nn.Module):
 
         for i,enc_layer in enumerate(self.layer_stack):
             enc_output, enc_slf_attn = enc_layer(enc_output,non_pad_mask=non_pad_mask, slf_attn_mask=slf_attn_mask)
+            print(f"Index:{i}")
+            print(enc_output)
             if return_attns:
                 enc_slf_attn_list += enc_slf_attn
 
