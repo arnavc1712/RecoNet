@@ -53,7 +53,6 @@ class MultiHeadAttention(nn.Module):
         if mask is not None:
             mask = mask.repeat(n_head, 1, 1) #
 
-        q = self.layer_norm(q)
         output, attn = self.attention(q, k, v, mask=mask)
         # print("Inside module")
         # print(output)
@@ -62,7 +61,7 @@ class MultiHeadAttention(nn.Module):
         output = output.permute(1, 2, 0, 3).contiguous().view(sz_b, len_q, -1) # b x lq x (n*dv)
 
         output = self.dropout(self.fc(output))
-        # output = self.layer_norm(output + residual)
+        output = self.layer_norm(output + residual)
         output = output + residual
 
         return output, attn
@@ -80,10 +79,10 @@ class PositionwiseFeedForward(nn.Module):
 
     def forward(self, x):
         residual = x
-        x = self.layer_norm(x)
+        # x = self.layer_norm(x)
         output = x.transpose(1, 2)
         output = self.w_2(F.relu(self.w_1(output)))
         output = output.transpose(1, 2)
         output = self.dropout(output)
-        output = output + residual
+        output = self.layer_norm(output + residual)
         return output
