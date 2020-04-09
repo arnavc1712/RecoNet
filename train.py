@@ -62,13 +62,13 @@ def train(loader,model,optimizer,opt):
 			positive_prediction = model(user_rep,target_ids)
 
 			# negative_var = model._get_negative_prediction(data[:,1:].size(),user_rep)
-			if opt["loss"]=="adaptive_hinge_loss" or opt["loss"]=="binary_cross_entropy":
+			if opt["loss"]=="adaptive_hinge_loss":
 				negative_prediction = model._get_multiple_negative_predictions(
 	                        input_ids.size(),
 	                        user_rep,
 	                        n=opt["num_neg_sml"])
 
-			else:
+			elif opt["loss"]=="binary_cross_entropy":
 				negative_prediction = model._get_negative_prediction(input_ids.size(),user_rep)
 			negative_prediction = model(user_rep, negative_prediction)
 
