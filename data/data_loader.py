@@ -118,6 +118,8 @@ def rec_collate_fn(batch_lst):
 		# target_ids[batch_id][-(max_seq_len-batch_data["targets"].shape[0]):] = batch_data["targets"]
 		user_ids.append(batch_data["user_ids"])
 
+	print("INPUT ID SHAPE")
+	print(input_ids.shape)
 	return input_ids.type(torch.LongTensor),target_ids.type(torch.LongTensor),torch.tensor(user_ids).type(torch.LongTensor)
 
 
