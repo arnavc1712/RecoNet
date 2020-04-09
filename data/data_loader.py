@@ -109,7 +109,9 @@ def rec_collate_fn(batch_lst):
 	input_ids = torch.zeros(len(batch_lst),max_seq_len)
 	target_ids = torch.zeros(len(batch_lst),max_seq_len)
 	user_ids = []
+
 	for batch_id,batch_data in enumerate(batch_lst):
+		print(batch_data["inputs"])
 		input_ids[batch_id][:batch_data["inputs"].shape[0]] = batch_data["inputs"]
 		target_ids[batch_id][:batch_data["targets"].shape[0]] = batch_data["targets"]
 		# input_ids[batch_id][(max_seq_len-batch_data["inputs"].shape[0]):] = batch_data["inputs"] ## PAdding zeros on the left
