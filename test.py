@@ -19,13 +19,14 @@ def test(loader,model,opt):
 	true_pred = 0
 	total = 0
 	for i,(input_ids,target_ids,user_ids) in enumerate(loader):
+		
+
+		total += input_ids.shape[0]
+		src_pos = pos_generate(input_ids)
 		input_ids = input_ids.cuda()
 		target_ids = target_ids.cuda()
 		src_pos = src_pos.cuda()
 		user_ids = user_ids.cuda()
-
-		total += input_ids.shape[0]
-		src_pos = pos_generate(input_ids)
 		user_rep,attns = model.user_representation(input_ids,src_pos,user_ids,return_attns=True,include_user=opt['include_user'])
 
 		tgt_indices_bf_padding = []
