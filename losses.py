@@ -94,8 +94,10 @@ def binary_cross_entropy(positive_predictions,negative_predictions,mask):
     if mask is not None:
         mask = mask.float()
         loss = loss * mask
-        print("MASK SUM")
-        print(mask.sum())
-        return -(loss.sum() / mask.sum())
+        # print("MASK SUM")
+        # print(mask.sum())
+        ret_loss =  -(loss.sum() / mask.sum())
+        print(ret_loss)
+        return ret_loss
 
     return -loss.mean()
