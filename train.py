@@ -138,7 +138,7 @@ def main(opt):
 
 
 	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09,weight_decay=0.01)
+                                          betas=(0.9, 0.98), eps=1e-09)
 	# optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
 	# betas=(0.9, 0.98), eps=1e-09), opt["dim_model"], opt["warm_up_steps"])
 	train(dataloader,model,optimizer,opt)
