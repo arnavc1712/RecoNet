@@ -96,6 +96,12 @@ class RecDataset(Dataset):
 		print("SEQUENCE")
 		print(sequence)
 		print("\n")
+
+		print("MUTATED SEQUENCE 1")
+		print(torch.from_numpy(sequence[:-1]).type(torch.LongTensor))
+		print("\n")
+		print("MUTATED SEQUENCE 2")
+		print(torch.from_numpy(sequence[1:]).type(torch.LongTensor))
 		data["inputs"] = torch.from_numpy(sequence[:-1]).type(torch.LongTensor)
 		data["targets"] = torch.from_numpy(sequence[1:]).type(torch.LongTensor)
 		data["user_ids"] = torch.from_numpy(self.splits[f"{self.mode}_user"][ix]).type(torch.LongTensor)
