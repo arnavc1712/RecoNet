@@ -8,19 +8,21 @@ from model.transformer.recModel import Encoder
 import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss,binary_cross_entropy
 from model.transformer.Optim import ScheduledOptim
+from sampling import sample_items
 import os
 
 def test(loader,model,opt):
 	model.eval()
 	ix_to_item = loader.dataset.get_ix_to_item()
 	item_to_ix = loader.dataset.get_item_to_ix()
+	num_items = opt['num_items']
 	total = len(loader)
 	print("total = ", total)
 	true_pred = 0
 	total = 0
 	for i,(input_ids,target_ids,user_ids) in enumerate(loader):
-		
-
+		neg_items = sample_items(num_items,(100))
+		print(neg_items).shape
 		total += input_ids.shape[0]
 		src_pos = pos_generate(input_ids)
 		input_ids = input_ids.cuda()
