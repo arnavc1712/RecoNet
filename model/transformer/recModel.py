@@ -123,6 +123,7 @@ class Encoder(nn.Module):
 
         ## Converting dimensions of video + postional embeddings into d_model
         batch_size, seq_len, dim_item = enc_output.size()
+        print(enc_output)
 
         # enc_output = enc_output.view(-1, dim_item)
 
@@ -137,7 +138,7 @@ class Encoder(nn.Module):
             if return_attns:
                 enc_slf_attn_list += enc_slf_attn
 
-        print(enc_output)
+
 
         if include_user:
             enc_output = enc_output + src_user_emb ## Adding user embedding for personalization
