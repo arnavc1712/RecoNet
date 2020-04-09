@@ -43,10 +43,11 @@ def test(loader,model,opt):
 				tgt_indices_bf_padding.append(len(target_ids[i])-1)
 			# print((input_ids[i]==0).nonzero().flatten())
 
-		print(input_ids)
-		print(target_ids)
-		print(inpt_indices_bf_padding)
-		print(tgt_indices_bf_padding)
+		print(input_ids.shape)
+		print(input_ids[0])
+		print(target_ids[0])
+		print(inpt_indices_bf_padding[0])
+		print(tgt_indices_bf_padding[0])
 		break
 		inpt_indices_bf_padding = np.array(inpt_indices_bf_padding)
 		tgt_indices_bf_padding = np.array(tgt_indices_bf_padding)
