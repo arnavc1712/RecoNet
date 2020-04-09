@@ -118,7 +118,7 @@ def train(loader,model,optimizer,opt):
 
 def main(opt):
 	dataset = RecDataset('train',opt)
-	dataloader = DataLoader(dataset,batch_size=128,shuffle=True,collate_fn=rec_collate_fn)
+	dataloader = DataLoader(dataset,batch_size=opt['batch_size'],shuffle=True,collate_fn=rec_collate_fn)
 
 	model = Encoder(seq_len=opt['max_seq_len'],
             dim_item=opt["dim_item"],
