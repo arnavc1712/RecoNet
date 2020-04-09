@@ -55,9 +55,7 @@ class MultiHeadAttention(nn.Module):
             mask = mask.repeat(n_head, 1, 1) #
 
         output, attn = self.attention(q, k, v, mask=mask)
-        print("Inside module")
 
-        print(torch.isnan(output).any())
         # print("Inside module")
         # print(output)
 
