@@ -64,6 +64,7 @@ def test(loader,model,opt):
 		all_samples = torch.cat((targets.unsqueeze(-1),neg_items),1)
 		print("ALL SAMPLEs")
 		print(all_samples.shape)
+		print(all_samples)
 		btch_sz,length,dim = user_rep_temp.size()
 		item_ids = np.array(list(ix_to_item.keys())).reshape(-1,1)
 		item_ids = torch.from_numpy(item_ids).type(torch.LongTensor).unsqueeze(0).repeat(btch_sz,1,1).cuda()
