@@ -27,11 +27,7 @@ class ScaledDotProductAttention(nn.Module):
         if mask is not None:
             attn = attn.masked_fill(mask, -np.inf)
 
-        print("ATTENTION BEFORE")
-        print(attn[0])
         attn = self.softmax(attn)
-        print("ATTENTION")
-        print(attn[0])
         attn = self.dropout(attn)
 
         
