@@ -19,11 +19,14 @@ def test(loader,model,opt):
 	true_pred = 0
 	total = 0
 	for i,(input_ids,target_ids,user_ids) in enumerate(loader):
+		input_ids = input_ids.cuda()
+		target_ids = target_ids.cuda()
+		src_pos = src_pos.cuda()
+		user_ids = user_ids.cuda()
+
 		total += input_ids.shape[0]
 		src_pos = pos_generate(input_ids)
 		user_rep,attns = model.user_representation(input_ids,src_pos,user_ids,return_attns=True,include_user=opt['include_user'])
-		target_ids=target_ids.cpu()
-		input_ids = input_ids.cpu()
 
 		tgt_indices_bf_padding = []
 		inpt_indices_bf_padding = []
@@ -42,10 +45,10 @@ def test(loader,model,opt):
 		inpt_indices_bf_padding = np.array(inpt_indices_bf_padding)
 		tgt_indices_bf_padding = np.array(tgt_indices_bf_padding)
 	
-		user_rep_temp = np.expand_dims(user_rep.detach().numpy()[np.array(list(range(len(input_ids)))),inpt_indices_bf_padding,:],axis=1)
+		user_rep_temp = np.expand_dims(user_rep.detach().cpu().numpy()[np.array(list(range(len(input_ids)))),inpt_indices_bf_padding,:],axis=1)
 		user_rep_temp = torch.from_numpy(user_rep_temp).type(torch.FloatTensor)
 		
-		targets = target_ids.detach().numpy()[np.array(list(range(len(target_ids)))),tgt_indices_bf_padding]
+		targets = target_ids.detach().cpu().numpy()[np.array(list(range(len(target_ids)))),tgt_indices_bf_padding]
 		targets = torch.from_numpy(targets).type(torch.LongTensor)
 
 	
@@ -54,7 +57,7 @@ def test(loader,model,opt):
 		item_ids = torch.from_numpy(item_ids).type(torch.LongTensor).unsqueeze(0).repeat(btch_sz,1,1).cuda()
 		# print(item_ids.shape)
 		# size = (len(item_ids),) + user_rep_temp.size()
-		user_rep_temp = user_rep_temp.unsqueeze(1).repeat(1,item_ids.shape[1],1,1)
+		user_rep_temp = user_rep_temp.unsqueeze(1).repeat(1,item_ids.shape[1],1,1).cuda()
 		# print(user_rep_temp.size())
 		out = model(user_rep_temp,item_ids)
 		# print(out.shape)
@@ -97,6 +100,7 @@ def main(opt):
             input_dropout_p=opt["input_dropout_p"],
             dropout=opt["dropout"])
 	model.load_state_dict(torch.load(opt['load_checkpoint']))
+	model.cuda()
 	model.eval()
 	test(dataloader,model,opt)
 
