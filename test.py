@@ -48,10 +48,10 @@ def test(loader,model,opt):
 		print(target_ids[0])
 		print(inpt_indices_bf_padding[0])
 		print(tgt_indices_bf_padding[0])
-		break
+		# break
 		inpt_indices_bf_padding = np.array(inpt_indices_bf_padding)
 		tgt_indices_bf_padding = np.array(tgt_indices_bf_padding)
-	
+		print(user_rep.shape)
 		user_rep_temp = np.expand_dims(user_rep.detach().cpu().numpy()[np.array(list(range(len(input_ids)))),inpt_indices_bf_padding,:],axis=1)
 		user_rep_temp = torch.from_numpy(user_rep_temp).type(torch.FloatTensor)
 		
