@@ -95,7 +95,8 @@ def train(loader,model,optimizer,opt):
 			# print(loss.item())
 			loss.backward()
 			torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
-			optimizer.step_and_update_lr()
+			optimizer.step()
+			# optimizer.step_and_update_lr()
 
 		if epoch % opt['save_checkpoint_every'] == 0:
 			model_path = os.path.join(opt['checkpoint_path'], 'recnet_%d.pth' % (epoch))
