@@ -88,7 +88,7 @@ class Encoder(nn.Module):
         self.item2hid = nn.Linear(dim_item,d_model)
 
         self.position_enc = nn.Embedding.from_pretrained(
-            get_sinusoid_encoding_table(n_position,dim_item,padding_idx=0), freeze=True)
+            get_sinusoid_encoding_table(n_position,dim_item,padding_idx=0), freeze=False)
 
         self.layer_stack = nn.ModuleList([
             EncoderLayer(d_model, d_inner, n_head, d_k, d_v, dropout=dropout)
