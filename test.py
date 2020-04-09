@@ -70,13 +70,17 @@ def test(loader,model,opt):
 		for i,predictions in enumerate(preds):
 			most_probable_10 = predictions.argsort()[-opt['num_recs']:][::-1]
 			# most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
+
 			g_t = targets[i].detach().cpu().numpy().flatten()[0]
 
 			if g_t in most_probable_10:
+				print(most_prob_10_items)
+				print(g_t)
 				true_pred+=1
 
 
 	print(f"Total: {total} ")
+	print(f"RIght predictions: {true_pred}")
 	print("Model Accuracy = ", true_pred/total)
 			
 
