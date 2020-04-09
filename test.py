@@ -23,7 +23,7 @@ def test(loader,model,opt):
 	for i,(input_ids,target_ids,user_ids) in enumerate(loader):
 		neg_items = sample_items(num_items=num_items,shape=(100))
 		neg_items = torch.tensor(neg_items).unsqueeze(0).repeat(input_ids.shape[0],1)
-		print(neg_items.shape)
+		# print(neg_items.shape)
 		total += input_ids.shape[0]
 		src_pos = pos_generate(input_ids)
 		input_ids = input_ids.cuda()
@@ -65,7 +65,8 @@ def test(loader,model,opt):
 		btch_sz,length,dim = user_rep_temp.size()
 		item_ids = np.array(list(ix_to_item.keys())).reshape(-1,1)
 		item_ids = torch.from_numpy(item_ids).type(torch.LongTensor).unsqueeze(0).repeat(btch_sz,1,1).cuda()
-		# print(item_ids.shape)
+		print("Item Ids")
+		print(item_ids.shape)
 		# size = (len(item_ids),) + user_rep_temp.size()
 		user_rep_temp = user_rep_temp.unsqueeze(1).repeat(1,item_ids.shape[1],1,1).cuda()
 		# print(user_rep_temp.size())
