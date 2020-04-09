@@ -74,8 +74,8 @@ def binary_cross_entropy(positive_predictions,negative_predictions,mask):
         positive_predictions (batch_size,max_seq_len)
         negative_predictions (n,batch_size,max_seq_len)
     '''
-    print(positive_predictions)
-    print(negative_predictions)
+    # print(positive_predictions)
+    # print(negative_predictions)
     positive_predictions = torch.sigmoid(positive_predictions)
     negative_predictions = torch.sigmoid(negative_predictions)
 
