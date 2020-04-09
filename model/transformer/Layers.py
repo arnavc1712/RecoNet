@@ -22,6 +22,9 @@ class EncoderLayer(nn.Module):
 
         # print("Self attention")
         # print(enc_output)
+        print("Self attention")
+
+        print(torch.isnan(enc_output).any())
         if non_pad_mask!=None:
             enc_output *= non_pad_mask
 
