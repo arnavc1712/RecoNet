@@ -28,10 +28,10 @@ class ScaledDotProductAttention(nn.Module):
             attn = attn.masked_fill(mask, -np.inf)
 
         print("ATTENTION BEFORE")
-        print(attn)
+        print(attn[0])
         attn = self.softmax(attn)
         print("ATTENTION")
-        print(attn)
+        print(attn[0])
         attn = self.dropout(attn)
 
         

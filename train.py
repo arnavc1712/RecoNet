@@ -44,7 +44,7 @@ def train(loader,model,optimizer,opt):
 			# print(data.shape)
 			# print(data)
 			# break
-			print(input_ids)
+			print(input_ids[0])
 
 			src_pos = pos_generate(input_ids)
 			input_ids = input_ids.cuda()
