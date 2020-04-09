@@ -22,7 +22,7 @@ def test(loader,model,opt):
 	total = 0
 	for i,(input_ids,target_ids,user_ids) in enumerate(loader):
 		neg_items = sample_items(num_items=num_items,shape=(100))
-		neg_items = neg_items.unsqueeze(0).repeat(input_ids.shape[0],1)
+		neg_items = torch.tensor(neg_items).unsqueeze(0).repeat(input_ids.shape[0],1)
 		print(neg_items.shape)
 		total += input_ids.shape[0]
 		src_pos = pos_generate(input_ids)
