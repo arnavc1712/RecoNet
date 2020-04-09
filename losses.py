@@ -86,6 +86,8 @@ def binary_cross_entropy(positive_predictions,negative_predictions,mask):
     
     loss = log_pos + log_neg
 
+    print("LOSS")
+    print(loss)
 
     if mask is not None:
         mask = mask.float()
