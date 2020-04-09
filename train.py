@@ -58,7 +58,7 @@ def train(loader,model,optimizer,opt):
 			user_rep,attns= model.user_representation(input_ids,src_pos,user_ids,return_attns=True,include_user=opt['include_user'])
 
 			print("USER REPRESENTATION")
-			print(user_rep)
+			print(torch.isnan(user_rep).any())
 
 			positive_prediction = model(user_rep,target_ids)
 
