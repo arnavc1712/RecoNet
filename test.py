@@ -81,7 +81,7 @@ def test(loader,model,opt):
 
 			if g_t in most_probable_10:
 				print(most_prob_10_items)
-				print(g_t)
+				print(ix_to_item(g_t))
 				true_pred+=1
 
 
