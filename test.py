@@ -15,7 +15,7 @@ def test(loader,model,opt):
 	model.eval()
 	ix_to_item = loader.dataset.get_ix_to_item()
 	item_to_ix = loader.dataset.get_item_to_ix()
-	num_items = opt['num_items']
+	num_items = len(item_to_ix)
 	total = len(loader)
 	print("total = ", total)
 	true_pred = 0
