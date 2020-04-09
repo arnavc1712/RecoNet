@@ -52,10 +52,12 @@ def train(loader,model,optimizer,opt):
 			src_pos = src_pos.cuda()
 			user_ids = user_ids.cuda()
 			
-			
+			print(input_ids[0])
+			print(src_pos[0])
+			print(user_ids[0])
 			user_rep,attns= model.user_representation(input_ids,src_pos,user_ids,return_attns=True,include_user=opt['include_user'])
 
-			print(user_rep)
+			# print(user_rep)
 
 			positive_prediction = model(user_rep,target_ids)
 
