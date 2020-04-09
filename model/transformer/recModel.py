@@ -136,7 +136,8 @@ class Encoder(nn.Module):
         for i,enc_layer in enumerate(self.layer_stack):
             enc_output, enc_slf_attn = enc_layer(enc_output,non_pad_mask=non_pad_mask, slf_attn_mask=slf_attn_mask)
             # print(f"Index:{i}")
-            # print(enc_output)
+            print(f"ENC_OUTPUT {i}")
+            print(torch.isnan(enc_output).any())
             if return_attns:
                 enc_slf_attn_list += enc_slf_attn
 
