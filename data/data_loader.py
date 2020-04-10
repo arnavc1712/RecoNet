@@ -110,10 +110,10 @@ class RecDataset(Dataset):
 			idx -= 1
 			if idx == -1: break
 
-        seq = torch.from_numpy(seq).type(torch.LongTensor)
-        pos = torch.from_numpy(pos).type(torch.LongTensor)
-        neg = torch.from_numpy(neg).type(torch.LongTensor)
-        return (user, seq, pos, neg)
+		seq = torch.from_numpy(seq).type(torch.LongTensor)
+		pos = torch.from_numpy(pos).type(torch.LongTensor)
+		neg = torch.from_numpy(neg).type(torch.LongTensor)
+		return (user, seq, pos, neg)
 		# print("SEQUENCE")
 		# print(sequence)
 		# print("\n")
