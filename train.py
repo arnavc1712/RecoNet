@@ -3,7 +3,7 @@ import torch.optim as optim
 import opts
 from torch.utils.data import DataLoader
 from utils.utils import *
-from data.data_loader import RecDataset,rec_collate_fn
+from data.data_loader import RecDataset
 from model.transformer.recModel import Encoder
 import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss, binary_cross_entropy
