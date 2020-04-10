@@ -76,7 +76,6 @@ def test(loader,model,opt):
 		# print(preds[0:10])
 
 		for i,predictions in enumerate(preds):
-			print(len(predictions))
 			most_probable_10 = predictions.argsort()[-opt['num_recs']:][::-1]
 
 			most_prob_10_items = list(map(lambda x:ix_to_item[x],most_probable_10))
@@ -98,7 +97,7 @@ def test(loader,model,opt):
 
 
 def main(opt):
-	dataset = RecDataset('test',opt)
+	dataset = RecDataset('train',opt)
 	dataloader = DataLoader(dataset,batch_size=128,shuffle=True,collate_fn=rec_collate_fn)
 	print(f"Number of Items: {dataset.get_num_items()}")
 	model = Encoder(seq_len=opt['max_seq_len'],
