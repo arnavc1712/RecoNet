@@ -105,7 +105,7 @@ class RecDataset(Dataset):
 		for i in reversed(self.user_train[user][:-1]):
 			seq[idx] = i
 			pos[idx] = nxt
-			if nxt != 0: neg[idx] = random_neq(1, itemnum + 1, ts)
+			if nxt != 0: neg[idx] = random_neq(1, self.num_items + 1, ts)
 			nxt = i
 			idx -= 1
 			if idx == -1: break
