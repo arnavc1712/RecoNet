@@ -153,7 +153,7 @@ def data_partition(fname):
     user_valid = {}
     user_test = {}
     # assume user/item index starting from 1
-    f = open(os.path.join("../data/",fname), 'r')
+    f = open(os.path.join(os.getcwd(),"data",fname), 'r')
     for line in f:
         u, i = line.rstrip().split(' ')
         u = int(u)
