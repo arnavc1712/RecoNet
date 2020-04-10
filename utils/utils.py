@@ -177,6 +177,12 @@ def data_partition(fname):
     return [user_train, user_valid, user_test, usernum, itemnum]
 
 
+def random_neq(l, r, s):
+    t = np.random.randint(l, r)
+    while t in s:
+        t = np.random.randint(l, r)
+    return t
+    
 # def show_prediction(seq_probs, labels, vocab):
 #     '''
 #         :return: predicted words and GT words.
