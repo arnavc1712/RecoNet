@@ -20,6 +20,7 @@ def train(loader,opt):
 	# item_to_ix = loader.dataset.get_item_to_ix()
 	for i,(user, seq, pos, neg) in enumerate(loader):
 		print("USER")
+		print(user)
 		print(user.shape)
 		print("\n")
 		print("SEQ")
