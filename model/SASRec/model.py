@@ -54,7 +54,7 @@ class Model(nn.Module):
 	def get_user_rep(self,u,input_seq):
 		mask = get_mask(input_seq)
 		subseq_mask = get_subsequent_mask(input_seq)
-		input_pos = pos_generate(input_seq)
+		input_pos = pos_generate(input_seq).cuda()
 		## Sequence embedding
 		input_emb = self.item_emb(input_seq)
 
