@@ -22,7 +22,7 @@ def train(loader,optimizer,model,opt,dataset):
 	model.train()
 	for epoch in range(opt['epochs']):
 		for i,(user, seq, pos, neg) in enumerate(loader):			
-
+			torch.cuda.synchronize()
 			optimizer.zero_grad()
 			user = user.cuda()
 			seq = seq.cuda()
@@ -46,8 +46,10 @@ def train(loader,optimizer,model,opt,dataset):
 
 			
 			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
+			torch.cuda.synchronize()
+			
 			loss.backward()
-			# torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
+			torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
 			optimizer.step()
 
 
