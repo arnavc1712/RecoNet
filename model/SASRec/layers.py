@@ -90,7 +90,10 @@ class feedforward(nn.Module):
 		residual = x
 		# x = self.layer_norm(x)
 		output = x.transpose(1, 2)
-		output = self.w_2(F.relu(self.w_1(output)))
+		output = self.w_1(output)
+		output = self.dropout(output.transpose(1,2))
+		output = output.transpose(1,2)
+		output = self.w_2(output)
 		output = output.transpose(1, 2)
 		output = self.dropout(output)
 		# output = self.layer_norm(output + residual)
