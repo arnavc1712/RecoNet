@@ -20,7 +20,7 @@ def train(loader,optimizer,model,opt,dataset):
 	# ix_to_item = loader.dataset.get_ix_to_item()
 	# item_to_ix = loader.dataset.get_item_to_ix()
 	model.train()
-	for epoch in range(1,opt['epochs']+1):
+	for epoch in range(opt['epochs']):
 		for i,(user, seq, pos, neg) in enumerate(loader):			
 
 			optimizer.zero_grad()
