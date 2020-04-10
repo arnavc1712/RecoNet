@@ -67,7 +67,7 @@ def parse_opt():
     parser.add_argument(
         '--dropout',
         type=float,
-        default=0.1,
+        default=0.2,
         help="strength on dropout in Transformer Encoder layer")
 
     parser.add_argument(
