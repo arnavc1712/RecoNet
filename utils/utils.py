@@ -186,6 +186,7 @@ def random_neq(l, r, s):
     return t
 
 def evaluate(model, dataset, opt):
+    model.eval()
     [train, valid, test, usernum, itemnum] = copy.deepcopy(dataset)
 
     NDCG = 0.0
@@ -237,6 +238,7 @@ def evaluate(model, dataset, opt):
 
 
 def evaluateRNN(model, dataset, opt):
+    model.eval()
     [train, valid, test, usernum, itemnum] = copy.deepcopy(dataset)
 
     NDCG = 0.0

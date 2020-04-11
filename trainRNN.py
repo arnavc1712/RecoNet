@@ -57,7 +57,7 @@ def train(loader,optimizer,model,opt,dataset):
 
 
 		if epoch%20==0:
-			t_test = evaluateRNN(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
+			t_test = evaluateRNN(model, (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
 			
 			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
 
