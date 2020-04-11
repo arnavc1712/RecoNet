@@ -60,6 +60,7 @@ def train(loader,optimizer,model,opt,dataset):
 			t_test = evaluateRNN(model, (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
 			
 			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
+			model.train()
 
 			# t_valid = evaluate_valid(model, dataset, args, sess)
 
