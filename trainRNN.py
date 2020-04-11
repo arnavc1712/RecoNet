@@ -4,6 +4,9 @@ import opts
 from torch.utils.data import DataLoader
 from utils.utils import *
 from data.data_loader import RecDataset
+from torch.utils.tensorboard import SummaryWriter
+
+# default `log_dir` is "runs" - we'll be more specific here
 # from model.transformer.recModel import Encoder
 import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss, binary_cross_entropy
@@ -11,6 +14,8 @@ from model.transformer.Optim import ScheduledOptim
 import os
 
 from model.RNNRec.model import Model
+
+writer = SummaryWriter('runs/recnet_rnn_exp1')
 
 
 
@@ -21,6 +26,10 @@ def train(loader,optimizer,model,opt,dataset):
 	# item_to_ix = loader.dataset.get_item_to_ix()
 	model.train()
 	for epoch in range(opt['epochs']):
+		epoch_loss = 0.0
+		epoch_pos_loss = 0.0
+		epoch_neg_loss = 0.0
+		iterations = 0
 		for i,(user, seq, pos, neg,seq_len) in enumerate(loader):			
 			optimizer.zero_grad()
 			user_rep = model.get_user_rep(user,seq,seq_len).contiguous()
@@ -33,25 +42,48 @@ def train(loader,optimizer,model,opt,dataset):
 			istarget = pos.ne(0).type(torch.float).view(seq.shape[0]*opt['max_seq_len'])
 			# print(pos)
 			# print(istarget.shape)
-			print(torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget)))
-			print(torch.sum((-torch.log(torch.sigmoid(neg_logits) + 1e-24)*istarget)))
+			pos_loss = torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget))
+			neg_loss = torch.sum((-torch.log(torch.sigmoid(neg_logits) + 1e-24)*istarget))
+			
 			loss = torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget) - (torch.log(1 - torch.sigmoid(neg_logits) + 1e-24)*istarget))
 			loss = loss/torch.sum(istarget)
+
+			epoch_loss+=loss.item()
+			epoch_pos_loss+=pos_loss.item()
+			epoch_neg_loss+=neg_loss.item()
 
 			# print(sum(istarget))
 
 			
 			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
 
+			
+
 			loss.backward()
 			# torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
 			optimizer.step()
+			iterations+=1
+
+		writer.add_scalar("overall_loss",epoch_loss/iterations,epoch)
+
+		writer.add_scalar("positive_loss",epoch_pos_loss/iterations,epoch)
+
+		writer.add_scalar("negative_loss",epoch_neg_loss/iterations,epoch)
 
 
 		if epoch%20==0:
 			t_test = evaluateRNN(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
 			
 			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
+
+			model_path = os.path.join(opt['checkpoint_path'], f'model_rnn_{epoch}.pth')
+			model_info_path = os.path.join(opt['checkpoint_path'], 'model_rnn_score.txt')
+			torch.save(model.state_dict(), model_path)
+
+			print('model saved to %s' % (model_path))
+			with open(model_info_path, 'a') as f:
+				f.write('model_%d, loss: %.6f\n' % (epoch, epoch_loss/iterations))
+
 
 			# t_valid = evaluate_valid(model, dataset, args, sess)
 
@@ -84,7 +116,7 @@ def main(opt):
 				  opt=opt)
 
 	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09,weight_decay=0.01)
+                                          betas=(0.9, 0.98), eps=1e-09,weight_decay=0.001)
 	# optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
 	# betas=(0.9, 0.98), eps=1e-09), opt["dim_model"], opt["warm_up_steps"])
 	train(dataloader,optimizer,model,opt,dataset)

@@ -9,8 +9,11 @@ import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss, binary_cross_entropy
 from model.transformer.Optim import ScheduledOptim
 import os
+from torch.utils.tensorboard import SummaryWriter
 
 from model.TransRec.model import Model
+
+writer = SummaryWriter('runs/recnet_transformer_exp1')
 
 
 
@@ -21,6 +24,10 @@ def train(loader,optimizer,model,opt,dataset):
 	# item_to_ix = loader.dataset.get_item_to_ix()
 	model.train()
 	for epoch in range(opt['epochs']):
+		epoch_loss = 0.0
+		epoch_pos_loss = 0.0
+		epoch_neg_loss = 0.0
+		iterations = 0
 		for i,(user, seq, pos, neg,seq_len) in enumerate(loader):			
 			optimizer.zero_grad()
 			user_rep = model.get_user_rep(user,seq)
@@ -33,12 +40,16 @@ def train(loader,optimizer,model,opt,dataset):
 			istarget = pos.ne(0).type(torch.float).view(seq.shape[0]*opt['max_seq_len'])
 			# print(pos)
 			# print(istarget.shape)
-			print(torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget)))
-			print(torch.sum((-torch.log(torch.sigmoid(neg_logits) + 1e-24)*istarget)))
+			pos_loss = torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget))
+			neg_loss = torch.sum((-torch.log(torch.sigmoid(neg_logits) + 1e-24)*istarget))
 			loss = torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget) - (torch.log(1 - torch.sigmoid(neg_logits) + 1e-24)*istarget))
 			loss = loss/torch.sum(istarget)
 
 			# print(sum(istarget))
+
+			epoch_loss+=loss.item()
+			epoch_pos_loss+=pos_loss.item()
+			epoch_neg_loss+=neg_loss.item()
 
 			
 			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
@@ -46,6 +57,13 @@ def train(loader,optimizer,model,opt,dataset):
 			loss.backward()
 			# torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
 			optimizer.step()
+			iterations+=1
+
+		writer.add_scalar("overall_loss",epoch_loss/iterations,epoch)
+
+		writer.add_scalar("positive_loss",epoch_pos_loss/iterations,epoch)
+
+		writer.add_scalar("negative_loss",epoch_neg_loss/iterations,epoch)
 
 
 		if epoch%20==0:
@@ -84,7 +102,7 @@ def main(opt):
 				  opt=opt)
 
 	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09,weight_decay=0.01)
+                                          betas=(0.9, 0.98), eps=1e-09,weight_decay=0.001)
 	# optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
 	# betas=(0.9, 0.98), eps=1e-09), opt["dim_model"], opt["warm_up_steps"])
 	train(dataloader,optimizer,model,opt,dataset)

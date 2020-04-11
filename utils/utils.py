@@ -163,7 +163,7 @@ def data_partition(fname):
         usernum = max(u, usernum)
         itemnum = max(i, itemnum)
         User[u].append(i)
-
+    print(f"NUMBEr of items: {itemnum}")
     for user in User:
         nfeedback = len(User[user])
         if nfeedback < 3:
