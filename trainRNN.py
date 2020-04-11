@@ -29,6 +29,7 @@ def train(loader,optimizer,model,opt,dataset):
 			seq = seq.cuda()
 			pos = pos.cuda()
 			neg = neg.cuda()
+			seq_len = seq_len.cuda()
 			user_rep = model.get_user_rep(user,seq,seq_len).contiguous()
 			# print(user_rep.shape)
 			pos = pos.view(seq.shape[0]*opt['max_seq_len'])
