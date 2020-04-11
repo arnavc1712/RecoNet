@@ -6,7 +6,7 @@ from utils.utils import *
 
 
 def get_mask(input_seq):
-	return input_seq.ne(0).type(torch.float).unsqueeze(-1)
+	return input_seq.ne(0).type(torch.float).unsqueeze(-1).cuda()
 
 def get_subsequent_mask(seq):
     ''' For masking out the subsequent info. '''
@@ -16,7 +16,7 @@ def get_subsequent_mask(seq):
         torch.ones((len_s, len_s), device=seq.device, dtype=torch.uint8), diagonal=1)
     subsequent_mask = subsequent_mask.unsqueeze(0).expand(sz_b, -1, -1)  # b x ls x ls
 
-    return subsequent_mask
+    return subsequent_mask.cuda()
 
 class Model(nn.Module):
 
@@ -54,7 +54,7 @@ class Model(nn.Module):
 	def get_user_rep(self,u,input_seq):
 		mask = get_mask(input_seq)
 		subseq_mask = get_subsequent_mask(input_seq)
-		input_pos = pos_generate(input_seq)
+		input_pos = pos_generate(input_seq).cuda()
 		## Sequence embedding
 		input_emb = self.item_emb(input_seq)
 

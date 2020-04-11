@@ -21,10 +21,16 @@ def train(loader,optimizer,model,opt,dataset):
 	# item_to_ix = loader.dataset.get_item_to_ix()
 	model.train()
 	for epoch in range(opt['epochs']):
-		for i,(user, seq, pos, neg,seq_len) in enumerate(loader):			
+		for i,(user, seq, pos, neg,seq_len) in enumerate(loader):
+
+			torch.cuda.synchronize()		
 			optimizer.zero_grad()
+			user = user.cuda()
+			seq = seq.cuda()
+			pos = pos.cuda()
+			neg = neg.cuda()
 			user_rep = model.get_user_rep(user,seq,seq_len).contiguous()
-			print(user_rep.shape)
+			# print(user_rep.shape)
 			pos = pos.view(seq.shape[0]*opt['max_seq_len'])
 			neg = neg.view(seq.shape[0]*opt['max_seq_len'])
 			pos_logits = model(user_rep,pos)
@@ -42,9 +48,10 @@ def train(loader,optimizer,model,opt,dataset):
 
 			
 			print(f"Epoch: {epoch}, Iteration: {i}, Loss: {loss.item()}")
+			torch.cuda.synchronize()
 
 			loss.backward()
-			# torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
+			torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
 			optimizer.step()
 
 
@@ -84,7 +91,7 @@ def main(opt):
 				  opt=opt)
 
 	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
-                                          betas=(0.9, 0.98), eps=1e-09,weight_decay=0.01)
+                                          betas=(0.9, 0.98), eps=1e-09,weight_decay=0.001)
 	# optimizer = ScheduledOptim(optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
 	# betas=(0.9, 0.98), eps=1e-09), opt["dim_model"], opt["warm_up_steps"])
 	train(dataloader,optimizer,model,opt,dataset)

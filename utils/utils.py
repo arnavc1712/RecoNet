@@ -216,8 +216,8 @@ def evaluate(model, dataset, opt):
             while t in rated: t = np.random.randint(1, itemnum + 1)
             item_idx.append(t)
 
-        user_rep = model.get_user_rep(torch.tensor([u]),torch.from_numpy(seq.reshape(1,-1)).type(torch.LongTensor))
-        predictions = -model.predict(user_rep,torch.tensor(item_idx))
+        user_rep = model.get_user_rep(torch.tensor([u]).cuda(),torch.from_numpy(seq.reshape(1,-1)).type(torch.LongTensor).cuda())
+        predictions = -model.predict(user_rep.cuda(),torch.tensor(item_idx).cuda())
         # predictions = -model.predict(torch.tensor([u]), torch.from_numpy(seq).type(torch.LongTensor), torch.tensor(item_idx))
         predictions = predictions.detach().cpu()[0]
 
@@ -269,8 +269,8 @@ def evaluateRNN(model, dataset, opt):
             while t in rated: t = np.random.randint(1, itemnum + 1)
             item_idx.append(t)
 
-        user_rep = model.get_user_rep(torch.tensor([u]),torch.from_numpy(seq.reshape(1,-1)).type(torch.LongTensor),torch.tensor([seq_len]))
-        predictions = -model.predict(user_rep,torch.tensor(item_idx))
+        user_rep = model.get_user_rep(torch.tensor([u]).cuda(),torch.from_numpy(seq.reshape(1,-1)).type(torch.LongTensor).cuda(),torch.tensor([seq_len]))
+        predictions = -model.predict(user_rep.cuda(),torch.tensor(item_idx).cuda())
         # predictions = -model.predict(torch.tensor([u]), torch.from_numpy(seq).type(torch.LongTensor), torch.tensor(item_idx))
         predictions = predictions.detach().cpu()[0]
 
