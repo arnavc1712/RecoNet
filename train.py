@@ -60,6 +60,14 @@ def train(loader,optimizer,model,opt,dataset):
 			
 			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
 
+			model_path = os.path.join(opt['checkpoint_path'], f'model_transformer_{epoch}.pth')
+			model_info_path = os.path.join(opt['checkpoint_path'], 'model_transformer_score.txt')
+			torch.save(model.state_dict(), model_path)
+
+			print('model saved to %s' % (model_path))
+			with open(model_info_path, 'a') as f:
+				f.write('model_%d, loss: %.6f\n' % (epoch, epoch_loss/iterations))
+
 			# t_valid = evaluate_valid(model, dataset, args, sess)
 
 
