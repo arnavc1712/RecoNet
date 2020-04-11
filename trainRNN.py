@@ -21,6 +21,10 @@ def train(loader,optimizer,model,opt,dataset):
 	# item_to_ix = loader.dataset.get_item_to_ix()
 	model.train()
 	for epoch in range(opt['epochs']):
+		epoch_loss = 0.0
+		epoch_pos_loss = 0.0
+		epoch_neg_loss = 0.0
+		iterations = 0
 		for i,(user, seq, pos, neg,seq_len) in enumerate(loader):
 
 			torch.cuda.synchronize()		
@@ -40,10 +44,15 @@ def train(loader,optimizer,model,opt,dataset):
 			istarget = pos.ne(0).type(torch.float).view(seq.shape[0]*opt['max_seq_len'])
 			# print(pos)
 			# print(istarget.shape)
-			print(torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget)))
-			print(torch.sum((-torch.log(torch.sigmoid(neg_logits) + 1e-24)*istarget)))
+			pos_loss = torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget))
+			neg_loss = torch.sum((-torch.log(torch.sigmoid(neg_logits) + 1e-24)*istarget))
+			
 			loss = torch.sum((-torch.log(torch.sigmoid(pos_logits) + 1e-24)*istarget) - (torch.log(1 - torch.sigmoid(neg_logits) + 1e-24)*istarget))
 			loss = loss/torch.sum(istarget)
+
+			epoch_loss += loss.item()
+			epoch_pos_loss += pos_loss.item()
+			epoch_neg_loss += neg_loss.item()
 
 			# print(sum(istarget))
 
@@ -54,6 +63,7 @@ def train(loader,optimizer,model,opt,dataset):
 			loss.backward()
 			torch.nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, model.parameters()), 1)
 			optimizer.step()
+			iterations += 1
 
 
 		if epoch%20==0:
