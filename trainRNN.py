@@ -4,13 +4,13 @@ import opts
 from torch.utils.data import DataLoader
 from utils.utils import *
 from data.data_loader import RecDataset
-from model.transformer.recModel import Encoder
+# from model.transformer.recModel import Encoder
 import torch.optim as optim
 from losses import hinge_loss, adaptive_hinge_loss, binary_cross_entropy
 from model.transformer.Optim import ScheduledOptim
 import os
 
-from model.TransRec.model import Model
+from model.RNNRec.model import Model
 
 
 
@@ -23,8 +23,8 @@ def train(loader,optimizer,model,opt,dataset):
 	for epoch in range(opt['epochs']):
 		for i,(user, seq, pos, neg,seq_len) in enumerate(loader):			
 			optimizer.zero_grad()
-			user_rep = model.get_user_rep(user,seq)
-
+			user_rep = model.get_user_rep(user,seq,seq_len).contiguous()
+			print(user_rep.shape)
 			pos = pos.view(seq.shape[0]*opt['max_seq_len'])
 			neg = neg.view(seq.shape[0]*opt['max_seq_len'])
 			pos_logits = model(user_rep,pos)
@@ -49,7 +49,7 @@ def train(loader,optimizer,model,opt,dataset):
 
 
 		if epoch%20==0:
-			t_test = evaluate(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
+			t_test = evaluateRNN(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
 			
 			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
 
@@ -60,7 +60,7 @@ def train(loader,optimizer,model,opt,dataset):
 
 
 def main(opt):
-	dataset = RecDataset('train',opt,model="transformer")
+	dataset = RecDataset('train',opt,model="rnn")
 	dataloader = DataLoader(dataset,batch_size=opt['batch_size'],shuffle=True)
 
 	# model = Encoder(seq_len=opt['max_seq_len'],

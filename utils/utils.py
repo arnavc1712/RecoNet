@@ -216,8 +216,8 @@ def evaluate(model, dataset, opt):
             while t in rated: t = np.random.randint(1, itemnum + 1)
             item_idx.append(t)
 
-        user_rep = model.get_user_rep(torch.tensor([u]).cuda(),torch.from_numpy(seq.reshape(1,-1)).type(torch.LongTensor).cuda())
-        predictions = -model.predict(user_rep.cuda(),torch.tensor(item_idx).cuda())
+        user_rep = model.get_user_rep(torch.tensor([u]),torch.from_numpy(seq.reshape(1,-1)).type(torch.LongTensor))
+        predictions = -model.predict(user_rep,torch.tensor(item_idx))
         # predictions = -model.predict(torch.tensor([u]), torch.from_numpy(seq).type(torch.LongTensor), torch.tensor(item_idx))
         predictions = predictions.detach().cpu()[0]
 
@@ -234,6 +234,58 @@ def evaluate(model, dataset, opt):
 
     return NDCG / valid_user, HT / valid_user
 
+
+
+def evaluateRNN(model, dataset, opt):
+    [train, valid, test, usernum, itemnum] = copy.deepcopy(dataset)
+
+    NDCG = 0.0
+    HT = 0.0
+    valid_user = 0.0
+
+    if usernum>10000:
+        users = random.sample(range(1, usernum + 1), 10000)
+    else:
+        users = list(range(1, usernum + 1))
+    for u in users:
+
+        if len(train[u]) < 1 or len(test[u]) < 1: continue
+
+        seq = np.zeros([opt['max_seq_len']], dtype=np.int32)
+        seq_len = min(len(train[u]) + 1,opt['max_seq_len'])
+        idx = seq_len - 1
+        
+        seq[idx] = valid[u][0]
+        idx -= 1
+        for i in reversed(train[u]):
+            seq[idx] = i
+            idx -= 1
+            if idx == -1: break
+        rated = set(train[u])
+        rated.add(0)
+        item_idx = [test[u][0]]
+        for _ in range(100):
+            t = np.random.randint(1, itemnum + 1)
+            while t in rated: t = np.random.randint(1, itemnum + 1)
+            item_idx.append(t)
+
+        user_rep = model.get_user_rep(torch.tensor([u]),torch.from_numpy(seq.reshape(1,-1)).type(torch.LongTensor),torch.tensor([seq_len]))
+        predictions = -model.predict(user_rep,torch.tensor(item_idx))
+        # predictions = -model.predict(torch.tensor([u]), torch.from_numpy(seq).type(torch.LongTensor), torch.tensor(item_idx))
+        predictions = predictions.detach().cpu()[0]
+
+        rank = predictions.argsort().argsort()[0]
+
+        valid_user += 1
+
+        if rank < 10:
+            NDCG += 1 / np.log2(rank + 2)
+            HT += 1
+        # if valid_user % 100 == 0:
+        #     print('.'),
+        #     sys.stdout.flush()
+
+    return NDCG / valid_user, HT / valid_user
 # def show_prediction(seq_probs, labels, vocab):
 #     '''
 #         :return: predicted words and GT words.
