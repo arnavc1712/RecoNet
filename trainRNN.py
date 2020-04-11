@@ -90,6 +90,7 @@ def main(opt):
 	model = Model(num_users=dataset.get_num_users(),
 				  num_items=dataset.get_num_items(),
 				  opt=opt)
+	model.cuda()
 
 	optimizer = optim.Adam(filter(lambda x: x.requires_grad, model.parameters()),
                                           betas=(0.9, 0.98), eps=1e-09,weight_decay=0.001)
