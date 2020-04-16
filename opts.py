@@ -37,7 +37,7 @@ def parse_opt():
         help='number of recommendations to show')
 
     parser.add_argument(
-        '--num_layers', type=int, default=1, help='number of layers in the Transformers')
+        '--num_layers', type=int, default=2, help='number of layers in the Transformers')
 
     parser.add_argument(
         '--input_dropout_p',
@@ -82,11 +82,7 @@ def parse_opt():
         default=100,
         help='Dimension of inner feature in Position wise feed forward neural network.')
 
-    parser.add_argument(
-        '--num_layer',
-        type=int,
-        default=2,
-        help='Numbers of layers in transformers.')
+
 
 
     parser.add_argument(

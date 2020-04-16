@@ -11,6 +11,8 @@ from model.transformer.Optim import ScheduledOptim
 import os
 
 from model.TransRec.model import Model
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter('runs/recnet_transformer_exp1')
 
 
 
@@ -64,11 +66,17 @@ def train(loader,optimizer,model,opt,dataset):
 
 			iterations += 1
 
+		writer.add_scalar("Loss/overall_loss",epoch_loss/iterations,epoch)
 
-		if epoch%20==0:
+		writer.add_scalar("Loss/positive_loss",epoch_pos_loss/iterations,epoch)
+
+		writer.add_scalar("Loss/negative_loss",epoch_neg_loss/iterations,epoch)
+
+
+		if epoch%10==0:
 			t_test = evaluate(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
 			
-			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
+			print(f"NDCG@10 : {t_test[0]}\t HIT@10 : {t_test[1]}")
 
 			model_path = os.path.join(opt['checkpoint_path'], f'model_transformer_{epoch}.pth')
 			model_info_path = os.path.join(opt['checkpoint_path'], 'model_transformer_score.txt')
@@ -77,6 +85,11 @@ def train(loader,optimizer,model,opt,dataset):
 			print('model saved to %s' % (model_path))
 			with open(model_info_path, 'a') as f:
 				f.write('model_%d, loss: %.6f\n' % (epoch, epoch_loss/iterations))
+
+			writer.add_scalar("Evaluation/HITS@10",t_test[1],epoch)
+
+			writer.add_scalar("Evaluation/NDCG@10",t_test[0],epoch)
+
 
 			# t_valid = evaluate_valid(model, dataset, args, sess)
 

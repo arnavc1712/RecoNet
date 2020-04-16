@@ -30,7 +30,7 @@ class Model(nn.Module):
 
         # self.rnn = self.rnn_cell(dim_hidden, dim_hidden, n_layers, batch_first=True,
         #                         bidirectional=bidirectional, dropout=self.rnn_dropout_p)
-        self.rnn = self.rnn_cell(self.dim_item, self.dim_item, opt['num_layer'], batch_first=True,
+        self.rnn = self.rnn_cell(self.dim_item, self.dim_item, opt['num_layers'], batch_first=True,
                                  dropout=self.dropout)
 
 
