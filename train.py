@@ -68,8 +68,16 @@ def train(loader,optimizer,model,opt,dataset):
 
 		if epoch%20==0:
 			t_test = evaluate(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
+			t_valid = evaluate_valid(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
 			
-			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
+
+			print(f"Valid NDCG : {t_valid[0]}\t Valid HIT@10 : {t_valid[1]}")
+			print(f"Test NDCG : {t_test[0]}\t Test HIT@10 : {t_test[1]}")
+
+			writer.add_scalar("Evaluation/Validation/NDCG@10",t_valid[0],epoch)
+			writer.add_scalar("Evaluation/Validation/HIT@10",t_valid[1],epoch)
+			writer.add_scalar("Evaluation/Test/NDCG@10",t_test[0],epoch)
+			writer.add_scalar("Evaluation/Test/HIT@10",t_test[1],epoch)
 
 			# t_valid = evaluate_valid(model, dataset, args, sess)
 

@@ -73,16 +73,23 @@ def train(loader,optimizer,model,opt,dataset):
 
 		if epoch%20==0:
 			t_test = evaluateRNN(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
+			t_valid = evaluateRNN_valid(model.eval(), (dataset.user_train, dataset.user_valid, dataset.user_test, dataset.num_users, dataset.num_items), opt)
 			
-			print(f"NCDG : {t_test[0]}\t HIT@10 : {t_test[1]}")
+			print(f"Valid NDCG : {t_valid[0]}\t Test HIT@10 : {t_valid[1]}")
+			print(f"Test NDCG : {t_test[0]}\t Test HIT@10 : {t_test[1]}")
 
-			model_path = os.path.join(opt['checkpoint_path'], f'model_rnn_{epoch}.pth')
-			model_info_path = os.path.join(opt['checkpoint_path'], 'model_rnn_score.txt')
-			torch.save(model.state_dict(), model_path)
+			writer.add_scalar("Evaluation/Validation/NDCG@10",t_valid[0],epoch)
+			writer.add_scalar("Evaluation/Validation/HIT@10",t_valid[1],epoch)
+			writer.add_scalar("Evaluation/Test/NDCG@10",t_test[0],epoch)
+			writer.add_scalar("Evaluation/Test/HIT@10",t_test[1],epoch)
 
-			print('model saved to %s' % (model_path))
-			with open(model_info_path, 'a') as f:
-				f.write('model_%d, loss: %.6f\n' % (epoch, epoch_loss/iterations))
+			# model_path = os.path.join(opt['checkpoint_path'], f'model_rnn_{epoch}.pth')
+			# model_info_path = os.path.join(opt['checkpoint_path'], 'model_rnn_score.txt')
+			# torch.save(model.state_dict(), model_path)
+
+			# print('model saved to %s' % (model_path))
+			# with open(model_info_path, 'a') as f:
+			# 	f.write('model_%d, loss: %.6f\n' % (epoch, epoch_loss/iterations))
 
 
 			# t_valid = evaluate_valid(model, dataset, args, sess)
